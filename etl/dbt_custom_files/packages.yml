@@ -1,0 +1,32 @@
+# !!!Note: New packages might generate syntax that SQL Server unable to run
+# Backup this file before testing any new dbt packages
+# run `dbt deps` to install new packages
+packages:
+  # https://github.com/dbt-labs/dbt-utils
+  # When dbt_utils verions > 0.8.4
+  # dbt_utils.deduplicate will compile with 'natrual join', which is not supported in T-SQL
+  - package: dbt-labs/dbt_utils 
+    version: 0.8.4
+  
+  # https://github.com/dbt-msft/tsql-utils
+  - package: dbt-msft/tsql_utils
+    version: 0.8.1
+
+  # https://github.com/calogica/dbt-date
+  - package: calogica/dbt_date
+    version: [">=0.5.0", "<0.6.0"]
+
+  # https://github.com/dbt-labs/dbt-audit-helper
+  # - package: dbt-labs/audit_helper
+  #   version: 0.5.0
+
+  # https://github.com/calogica/dbt-date Not support SQL Server
+  # - package: calogica/dbt_date
+  #   version: [">=0.5.0", "<0.6.0"]
+
+  # https://github.com/calogica/dbt-expectations Not support SQL Server
+  # - package: calogica/dbt_expectations
+  #   version: [">=0.5.0", "<0.6.0"]
+
+  # - package: dbt-labs/metrics
+  #   version: 0.1.5
