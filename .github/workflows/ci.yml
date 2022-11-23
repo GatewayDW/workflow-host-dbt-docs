@@ -11,6 +11,11 @@ on:
         type: string
       folder-path:
         required: true
+  pull_request:
+    branches: []
+  push:
+    branches: []
+  workflow_dispatch:
 
     # secrets:
     #   token:
