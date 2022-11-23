@@ -9,8 +9,9 @@ on:
       path:
         required: true
         type: string
-      folder-path:
+      folderpath:
         required: true
+        type: string
 
     # secrets:
     #   token:
