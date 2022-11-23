@@ -1,0 +1,67 @@
+name: Host dbt doc on website
+
+on:
+  workflow_call:
+    inputs:
+      # config-path:
+      #   required: true
+      #   type: string
+      path:
+        required: true
+        type: string
+      folder-path:
+        required: true
+
+    # secrets:
+    #   token:
+    #     required: true
+permissions:
+  contents: write
+  
+jobs:
+  # triage:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/labeler@v4
+  #     with:
+  #       repo-token: ${{ secrets.token }}
+  #       configuration-path: ${{ inputs.config-path }}
+
+  build:  
+    runs-on: self-hosted # environment to be used
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+        
+      - name: Install dbt
+        run: pip install dbt-sqlserver
+        
+      - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
+        uses: actions/upload-artifact@v1
+        with:
+          name: site
+          path: ${{ inputs.path }} # etl/CDW_FB_SQ
+      
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Artifacts 🔻 # The built project is downloaded into the 'site' folder.
+        uses: actions/download-artifact@v1
+        with:
+          name: site
+
+      
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with: 
+          folder: ${{ inputs.folderpath }} # etl/CDW_FB_SQ/target
