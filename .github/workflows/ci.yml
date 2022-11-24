@@ -6,6 +6,9 @@ on:
       # config-path:
       #   required: true
       #   type: string
+      env:
+        required: true
+        type: string
       path:
         required: true
         type: string
@@ -29,7 +32,7 @@ jobs:
   #       configuration-path: ${{ inputs.config-path }}
 
   build:  
-    runs-on: self-hosted # environment to be used
+    runs-on: ${{ inputs.env }} # self-hosted # environment to be used
     
     steps:
       - uses: actions/checkout@v3
