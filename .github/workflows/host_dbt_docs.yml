@@ -76,4 +76,4 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
-          folder: artifact/${{ inputs.folderpath }} # etl/CDW_FB_SQ/target
+          folder: artifact # etl/CDW_FB_SQ/target
