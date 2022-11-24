@@ -52,8 +52,8 @@ jobs:
           path: ${{ inputs.path }} # etl/CDW_FB_SQ
       
       - name: dbt docs gen
-        run: dbt docs generate
-        path: ${{ inputs.path }}
+        run: dbt docs generate --profiles-dir
+    
       
 
   deploy:
