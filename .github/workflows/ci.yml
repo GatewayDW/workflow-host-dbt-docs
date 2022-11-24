@@ -44,7 +44,9 @@ jobs:
         
       - name: Install dbt
         run: pip install dbt-sqlserver
-             dbt deps
+      
+      - name: Install dbt deps
+        run: dbt deps
         
       - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
         uses: actions/upload-artifact@v1
