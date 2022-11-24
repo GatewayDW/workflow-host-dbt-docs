@@ -52,7 +52,7 @@ jobs:
           path: ${{ inputs.path }} # etl/CDW_FB_SQ
       
       - name: dbt docs gen
-        run: dbt docs generate --profiles-dir
+        run: dbt docs generate
     
       
 
