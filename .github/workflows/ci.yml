@@ -53,6 +53,7 @@ jobs:
       
       - name: dbt docs gen
         run: dbt docs generate
+        working-directory: ${{ inputs.path }}
     
       
 
