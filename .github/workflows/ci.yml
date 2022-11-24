@@ -44,9 +44,6 @@ jobs:
         
       - name: Install dbt
         run: pip install dbt-sqlserver
-      
-      - name: Install dbt deps
-        run: dbt deps
         
       - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
         uses: actions/upload-artifact@v1
@@ -54,6 +51,10 @@ jobs:
           name: site
           path: ${{ inputs.path }} # etl/CDW_FB_SQ
       
+      - name: Install dbt deps
+        run: dbt deps
+        working-directory: ${{ inputs.path }}
+        
       - name: dbt docs gen
         run: dbt docs generate
         working-directory: ${{ inputs.path }}
