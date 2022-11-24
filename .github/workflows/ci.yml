@@ -50,7 +50,7 @@ jobs:
         working-directory: ${{ inputs.path }}
         
       - name: dbt docs gen
-        run: dbt docs generate --profile-dir .
+        run: dbt docs generate --profiles-dir .
         working-directory: ${{ inputs.path }}
         
       - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
