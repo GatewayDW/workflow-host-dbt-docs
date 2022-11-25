@@ -49,13 +49,17 @@ jobs:
 
       - name: create dbt model (.sql) to document current CI build no.
         run: |
-          mkdir ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
-          echo "select 
-            '${{ github.run_number }}' as build_no,
-            '${{ github.repositoryUrl }}' as repo_url,
-            '${{ runner.name }}' as runner_name,
-            '${{ runner.os }}' as runner_os
-          " > ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
+          if [ "$RUNNER_OS" == "Windows" ]; then
+            mkdir ${{ inputs.dbt_project_path }}/models/cicd -Force
+            echo "select 
+              '${{ github.run_number }}' as build_no,
+              '${{ github.repositoryUrl }}' as repo_url,
+              '${{ runner.name }}' as runner_name,
+              '${{ runner.os }}' as runner_os
+            " > ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
+          else
+            echo "$RUNNER_OS not supported"
+            exit 1
           
       - name: dbt docs gen
         run: dbt docs generate --profiles-dir .
