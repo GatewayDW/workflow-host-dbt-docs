@@ -9,10 +9,8 @@ on:
       env:
         required: true
         type: string
-      path:
-        required: true
-        type: string
-      folderpath:
+
+      dbt_project_path:
         required: true
         type: string
 
@@ -47,17 +45,21 @@ jobs:
         
       - name: Install dbt deps
         run: dbt deps
-        working-directory: ${{ inputs.path }}
+        working-directory: ${{ inputs.dbt_project_path }}
         
       - name: dbt docs gen
         run: dbt docs generate --profiles-dir .
-        working-directory: ${{ inputs.path }}
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: dbt compile
+        run: dbt compile --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}
         
       - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
         uses: actions/upload-artifact@v1
         with:
           name: artifact
-          path: ${{ inputs.path }} # etl/CDW_FB_SQ
+          path: ${{ inputs.dbt_project_path }} # etl/CDW_FB_SQ
       
 
   deploy:
@@ -76,7 +78,7 @@ jobs:
         run: |
           ls -R
       
-      # - name: Deploy
-      #   uses: JamesIves/github-pages-deploy-action@v4
-      #   with: 
-      #     folder: target # etl/CDW_FB_SQ/target
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with: 
+          folder: artifact/target # etl/CDW_FB_SQ/target
