@@ -15,6 +15,8 @@ on:
         required: true
         type: string
 
+      
+
 permissions:
   contents: write
 
@@ -33,7 +35,7 @@ jobs:
 
   build:  
     runs-on: ${{ inputs.runner_type }} # self-hosted # environment to be used
-    
+    environment: dev
     steps:
       - uses: actions/checkout@v3
       
@@ -85,6 +87,38 @@ jobs:
           $MyFile = Get-Content $output_path
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+
+      - name: (Windows) create dbt profiles (.yml)
+        if: runner.os == 'Windows'
+        run: |
+          $output_dir = "${{ inputs.dbt_project_path }}"
+          $output_path = "$output_dir/profiles.yml"
+
+          # mkdir $output_dir -Force
+          
+          $content = echo "
+          ${{ inputs.dbt_project_name }}:
+            # This file is generate by CI pipeline
+            target: dev
+            outputs:
+                dev:
+                  type: sqlserver
+                  driver: 'ODBC Driver 17 for SQL Server'
+                  server: ${{ secrets.DBT_SERVER }}
+                  database: ${{ secrets.DBT_DATABASE }}
+                  schema: dbo
+                  user: ${{ secrets.DBT_USER }}
+                  password: ${{ secrets.DBT_PASSWORD }}
+                  trust_cert: true
+          "
+          
+          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+
+          # Convert to UTF-8 No BOM
+          $MyFile = Get-Content $output_path
+          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+
 
       - name: dbt run ${{ env.DBT_MODEL_GHA_METADATA }}
         if: runner.os == 'Windows'
