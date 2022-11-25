@@ -13,7 +13,7 @@ This repo is used as the template when creating new repository.
 3. Copy from [here](https://github.com/sfbrigade/data-science-wg/blob/master/dswg_project_resources/Project-README-template.md) paste and edit the followings as your `readme.md` in root folder
 
 
-## GitHub Actions - host dbt docs on website
+## GitHub Actions - host dbt docs on website (Reusable workflow)
 
 https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE&feature=youtu.be
 
@@ -26,23 +26,28 @@ https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE&feature=youtu.be
 
 
 ```yaml
-  name: CI
+ name: Host dbt doc on website
 
-# To trigger the Actions
 on:
-  pull_request:
-    branches: [MY-28-github_page_test2]
-  push:
-    branches: [main]
-  workflow_dispatch:
-
+  workflow_call: 
+    inputs:  #set up variables
+      env:
+        required: true
+        type: string
+      path:
+        required: true
+        type: string
+      folderpath:
+        required: true
+        type: string
 
 permissions:
   contents: write
-
+  
 jobs:
+
   build:  
-    runs-on: self-hosted # choose the environment to be used
+    runs-on: ${{ inputs.env }} # self-hosted # environment to be used
     
     steps:
       - uses: actions/checkout@v3
@@ -52,26 +57,31 @@ jobs:
         with:
           python-version: '3.9'
         
-      
-      - name: Install dbt 
-        run: pip install dbt-sqlserver # install the correct dbt tool
-      
-      # Applicable when "self-hosted" is used
+      - name: Install dbt
+        run: pip install dbt-sqlserver
+        
+      - name: Install dbt deps
+        run: dbt deps
+        working-directory: ${{ inputs.path }}
+        
+      - name: dbt docs gen
+        run: dbt docs generate --profiles-dir .
+        working-directory: ${{ inputs.path }} # directory of the profiles.yml
+        
       - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
         uses: actions/upload-artifact@v1
         with:
           name: site
-          path: etl/CDW_FB_SQ # dbt project folder path
+          path: ${{ inputs.path }} # etl/CDW_FB_SQ
       
 
   deploy:
-    needs: [build] # [deploy] action will run after [build] action done 
+    needs: [build] # prerequisite action
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-    
-    # pair up with upload artifacts
+
       - name: Download Artifacts 🔻 # The built project is downloaded into the 'site' folder.
         uses: actions/download-artifact@v1
         with:
@@ -81,5 +91,5 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
-          folder: etl/CDW_FB_SQ/target
+          folder: ${{ inputs.folderpath }} # etl/CDW_FB_SQ/target
 ```
