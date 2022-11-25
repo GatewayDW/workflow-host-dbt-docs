@@ -3,25 +3,24 @@ name: Host dbt doc on website
 on:
   workflow_call:
     inputs:
-      # config-path:
-      #   required: true
-      #   type: string
       runner_type:
         required: true
         type: string
+
+      dbt_project_name:
+        required: true
+        type: string    
 
       dbt_project_path:
         required: true
         type: string
 
-    # secrets:
-    #   token:
-    #     required: true
 permissions:
   contents: write
 
 env:
   DBT_MODEL_GHA_METADATA: "github_actions_metadata"
+  DBT_SCHEMA: "ghactions"
   
 jobs:
   # triage:
@@ -56,16 +55,15 @@ jobs:
       - name: (Windows) create dbt model (.sql) to document current CI build no.
         if: runner.os == 'Windows'
         run: |
-          $dbt_schema = "ghactions"
-          #$dbt_model_name_gha_metadata = ${{ env.DBT_MODEL_GHA_METADATA }}
-          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+          $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
+          $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
 
-          mkdir ${{ inputs.dbt_project_path }}/models/$dbt_schema -Force
+          mkdir $output_dir -Force
           
           $content = echo "
             {{ config(
                 materialized='view',
-                schema='$dbt_schema',
+                schema='${{ env.DBT_SCHEMA }}',
               ) }}
             select 
               '${{ github.run_number }}' as build_no,
@@ -114,7 +112,7 @@ jobs:
         with:
           name: artifact
 
-      # - name: ls 
+      # - name: ls recursively to check current and subdirectory
       #   run: |
       #     ls -R
       
