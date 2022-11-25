@@ -57,7 +57,13 @@ jobs:
               '${{ runner.name }}' as runner_name,
               '${{ runner.os }}' as runner_os
           "
-          Out-File -FilePath ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql -InputObject $content -Encoding utf8
+          $output_path = "${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql"
+          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+
+          # Convert to UTF-8 No BOM
+          $MyFile = Get-Content $output_path
+          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding
 
       - name: dbt run dbt_build
         if: runner.os == 'Windows'
