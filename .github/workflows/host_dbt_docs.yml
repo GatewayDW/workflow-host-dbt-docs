@@ -21,7 +21,7 @@ permissions:
   contents: write
 
 env:
-  dbt_model_gha_metadata: "github_actions_metadata"
+  DBT_MODEL_GHA_METADATA: "github_actions_metadata"
   
 jobs:
   # triage:
@@ -57,8 +57,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $dbt_schema = "ghactions"
-          #$dbt_model_name_gha_metadata = ${{ env.dbt_model_gha_metadata }}
-          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/${{ env.dbt_model_gha_metadata }}.sql"
+          #$dbt_model_name_gha_metadata = ${{ env.DBT_MODEL_GHA_METADATA }}
+          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
 
           mkdir ${{ inputs.dbt_project_path }}/models/$dbt_schema -Force
           
@@ -82,9 +82,9 @@ jobs:
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      - name: dbt run ${{ env.dbt_model_gha_metadata }}
+      - name: dbt run ${{ env.DBT_MODEL_GHA_METADATA }}
         if: runner.os == 'Windows'
-        run: dbt run --select ${{ env.dbt_model_gha_metadata }} --profiles-dir .
+        run: dbt run --select ${{ env.DBT_MODEL_GHA_METADATA }} --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}  
 
       - name: dbt docs gen
