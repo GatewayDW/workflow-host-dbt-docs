@@ -63,7 +63,7 @@ jobs:
           # Convert to UTF-8 No BOM
           $MyFile = Get-Content $output_path
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
       - name: dbt run dbt_build
         if: runner.os == 'Windows'
