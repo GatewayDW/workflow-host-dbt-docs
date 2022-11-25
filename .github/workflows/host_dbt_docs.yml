@@ -50,14 +50,25 @@ jobs:
       - name: (Windows) create dbt model (.sql) to document current CI build no.
         if: runner.os == 'Windows'
         run: |
-          mkdir ${{ inputs.dbt_project_path }}/models/cicd -Force
-          $content = echo "select 
+          $dbt_schema = "ghactions"
+          $dbt_model_name = "github_actions_metadata"
+          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/$dbt_model_name.sql"
+
+          mkdir ${{ inputs.dbt_project_path }}/models/$dbt_schema -Force
+          
+          $content = echo "
+            {{ config(
+                materialized='view',
+                schema='$dbt_schema',
+              ) }}
+            select 
               '${{ github.run_number }}' as build_no,
               '${{ github.repositoryUrl }}' as repo_url,
+              '${{ github.actor }}' as actor,
               '${{ runner.name }}' as runner_name,
               '${{ runner.os }}' as runner_os
           "
-          $output_path = "${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql"
+          
           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
 
           # Convert to UTF-8 No BOM
