@@ -6,7 +6,7 @@ on:
       # config-path:
       #   required: true
       #   type: string
-      env:
+      runner_type:
         required: true
         type: string
 
@@ -33,7 +33,7 @@ jobs:
   #       configuration-path: ${{ inputs.config-path }}
 
   build:  
-    runs-on: ${{ inputs.env }} # self-hosted # environment to be used
+    runs-on: ${{ inputs.runner_type }} # self-hosted # environment to be used
     
     steps:
       - name: List of the Github Actions environment variables on ${{ runner.os }}
@@ -57,7 +57,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $dbt_schema = "ghactions"
-          # $dbt_model_name = ${{ env.dbt_model_gha_metadata }}
+          #$dbt_model_name_gha_metadata = ${{ env.dbt_model_gha_metadata }}
           $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/${{ env.dbt_model_gha_metadata }}.sql"
 
           mkdir ${{ inputs.dbt_project_path }}/models/$dbt_schema -Force
@@ -82,9 +82,9 @@ jobs:
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      - name: dbt run ${{ dbt_model_name_ghaction_metadata }}
+      - name: dbt run ${{ env.dbt_model_gha_metadata }}
         if: runner.os == 'Windows'
-        run: dbt run --select ${{ dbt_model_name_ghaction_metadata }} --profiles-dir .
+        run: dbt run --select ${{ env.dbt_model_gha_metadata }} --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}  
 
       - name: dbt docs gen
