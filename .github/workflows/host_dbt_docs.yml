@@ -90,6 +90,11 @@ jobs:
 
       - name: (Windows) create dbt profiles (.yml)
         if: runner.os == 'Windows'
+        env:
+          DBT_SERVER: ${{ secrets.DBT_SERVER }}
+          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
+          DBT_USER: ${{ secrets.DBT_USER }}
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
         run: |
           $output_dir = "${{ inputs.dbt_project_path }}"
           $output_path = "$output_dir/profiles.yml"
@@ -104,11 +109,11 @@ jobs:
                 dev:
                   type: sqlserver
                   driver: 'ODBC Driver 17 for SQL Server'
-                  server: ${{ secrets.DBT_SERVER }}
-                  database: ${{ secrets.DBT_DATABASE }}
+                  server: $env:DBT_SERVER
+                  database: $env:DBT_DATABASE
                   schema: dbo
-                  user: ${{ secrets.DBT_USER }}
-                  password: ${{ secrets.DBT_PASSWORD }}
+                  user: $env:DBT_USER
+                  password: $env:DBT_PASSWORD
                   trust_cert: true
           "
           
