@@ -97,12 +97,14 @@ jobs:
           DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
         run: |
           Get-ChildItem Env:
-          
+
           $output_dir = "${{ inputs.dbt_project_path }}"
           $output_path = "$output_dir/profiles.yml"
 
           # mkdir $output_dir -Force
-          # DBT_PASSWORD = ${{ secrets.DBT_PASSWORD }}
+          echo "1DBT_PASSWORD = '$DBT_PASSWORD'"
+          echo "2DBT_PASSWORD = '${DBT_PASSWORD}'"
+          echo "3DBT_PASSWORD = '${{ secrets.DBT_PASSWORD }}'"
           
           $content = echo "
           ${{ inputs.dbt_project_name }}:
