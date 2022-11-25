@@ -30,7 +30,7 @@ https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE&feature=youtu.be
 
 on:
   workflow_call: 
-    inputs:  #set up variables
+    inputs:  #set up parameters
       env:
         required: true
         type: string
