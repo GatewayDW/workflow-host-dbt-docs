@@ -35,9 +35,6 @@ jobs:
     runs-on: ${{ inputs.runner_type }} # self-hosted # environment to be used
     
     steps:
-      - name: List of the Github Actions environment variables on ${{ runner.os }}
-        run: env
-
       - uses: actions/checkout@v3
       
       - name: Setup Python
