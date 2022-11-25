@@ -39,17 +39,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
+      # - name: Setup Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: '3.9'
         
-      - name: Install dbt
-        run: pip install dbt-sqlserver==1.3.0
+      # - name: Install dbt
+      #   run: pip install dbt-sqlserver==1.3.0
         
-      - name: Install dbt deps
-        run: dbt deps
-        working-directory: ${{ inputs.dbt_project_path }}
+      # - name: Install dbt deps
+      #   run: dbt deps
+      #   working-directory: ${{ inputs.dbt_project_path }}
 
       - name: (Windows) create dbt model (.sql) to document current CI build no.
         if: runner.os == 'Windows'
@@ -100,6 +100,7 @@ jobs:
           $output_path = "$output_dir/profiles.yml"
 
           # mkdir $output_dir -Force
+          # DBT_PASSWORD = ${{ secrets.DBT_PASSWORD }}
           
           $content = echo "
           ${{ inputs.dbt_project_name }}:
@@ -109,11 +110,11 @@ jobs:
                 dev:
                   type: sqlserver
                   driver: 'ODBC Driver 17 for SQL Server'
-                  server: $env:DBT_SERVER
-                  database: $env:DBT_DATABASE
+                  server: ${DBT_SERVER}
+                  database: ${DBT_DATABASE}
                   schema: dbo
-                  user: $env:DBT_USER
-                  password: $env:DBT_PASSWORD
+                  user: ${DBT_USER}
+                  password: ${DBT_PASSWORD}
                   trust_cert: true
           "
           
