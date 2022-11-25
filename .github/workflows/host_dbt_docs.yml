@@ -21,7 +21,7 @@ permissions:
   contents: write
 
 env:
-  dbt_model_name_ghaction_metadata: github_actions_metadata
+  dbt_model_gha_metadata: "github_actions_metadata"
   
 jobs:
   # triage:
@@ -36,6 +36,9 @@ jobs:
     runs-on: ${{ inputs.env }} # self-hosted # environment to be used
     
     steps:
+      - name: List of the Github Actions environment variables on ${{ runner.os }}
+        run: env
+
       - uses: actions/checkout@v3
       
       - name: Setup Python
@@ -54,8 +57,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $dbt_schema = "ghactions"
-          # $dbt_model_name = $dbt_model_name_ghaction_metadata
-          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/$dbt_model_name_ghaction_metadata.sql"
+          # $dbt_model_name = ${{ env.dbt_model_gha_metadata }}
+          $output_path = "${{ inputs.dbt_project_path }}/models/$dbt_schema/${{ env.dbt_model_gha_metadata }}.sql"
 
           mkdir ${{ inputs.dbt_project_path }}/models/$dbt_schema -Force
           
