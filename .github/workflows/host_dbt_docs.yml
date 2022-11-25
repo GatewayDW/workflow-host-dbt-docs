@@ -96,6 +96,8 @@ jobs:
           DBT_USER: ${{ secrets.DBT_USER }}
           DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
         run: |
+          Get-ChildItem Env:
+          
           $output_dir = "${{ inputs.dbt_project_path }}"
           $output_path = "$output_dir/profiles.yml"
 
