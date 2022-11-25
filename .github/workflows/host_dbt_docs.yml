@@ -56,6 +56,7 @@ jobs:
             '${{ runner.name }}' as runner_name,
             '${{ runner.os }}' as runner_os
           ) > ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
+        shell: cmd
 
       - name: dbt docs gen
         run: dbt docs generate --profiles-dir .
