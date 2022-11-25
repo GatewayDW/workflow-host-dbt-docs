@@ -49,6 +49,7 @@ jobs:
 
       - name: create dbt model (.sql) to document current CI build no.
         run: |
+          mkdir ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
           echo "select 
             '${{ github.run_number }}' as build_no,
             '${{ github.repositoryUrl }}' as repo_url,
