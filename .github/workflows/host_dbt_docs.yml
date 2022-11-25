@@ -62,12 +62,21 @@ jobs:
                 materialized='view',
                 schema='${{ env.DBT_SCHEMA }}',
               ) }}
-            select 
-              '${{ github.run_number }}' as build_no,
+
+            -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+            select
               '${{ github.repositoryUrl }}' as repo_url,
+              '${{ github.sha }}' as repo_sha,
+
+              '${{ github.workflow }}' as workflow_name,
+              '${{ github.ref }}' as workflow_trigger,
+              '${{ github.run_number }}' as build_no,
+              '${{ github.run_attempt }}' as build_run_attempt,
+              
               '${{ github.actor }}' as actor,
               '${{ runner.name }}' as runner_name,
-              '${{ runner.os }}' as runner_os
+              '${{ runner.os }}' as runner_os,
+              '${{ runner.arch }}' as runner_arch
           "
           
           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
