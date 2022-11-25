@@ -72,8 +72,11 @@ jobs:
         with:
           name: artifact
 
+      - name: ls 
+        run: |
+          ls -R
       
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with: 
-          folder: target # etl/CDW_FB_SQ/target
+      # - name: Deploy
+      #   uses: JamesIves/github-pages-deploy-action@v4
+      #   with: 
+      #     folder: target # etl/CDW_FB_SQ/target
