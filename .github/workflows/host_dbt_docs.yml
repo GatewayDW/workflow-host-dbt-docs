@@ -49,7 +49,7 @@ jobs:
 
       - name: create dbt model (.sql) to document current CI build no.
         run: |
-          if [ "$RUNNER_OS" == "Windows" ]; then
+          if [ '${{ runner.os }}' == "Windows" ]; then
             mkdir ${{ inputs.dbt_project_path }}/models/cicd -Force
             echo "select 
               '${{ github.run_number }}' as build_no,
@@ -58,7 +58,7 @@ jobs:
               '${{ runner.os }}' as runner_os
             " > ${{ inputs.dbt_project_path }}/models/cicd/dbt_build.sql
           else
-            echo "$RUNNER_OS not supported"
+            echo "${{ runner.os }} not supported"
             exit 1
           
       - name: dbt docs gen
