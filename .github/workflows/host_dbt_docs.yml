@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: artifact
-          path: ${{ inputs.path }}/target # etl/CDW_FB_SQ
+          path: ${{ inputs.path }} # etl/CDW_FB_SQ
       
 
   deploy:
@@ -76,4 +76,4 @@ jobs:
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
-          folder: artifact # etl/CDW_FB_SQ/target
+          folder: target # etl/CDW_FB_SQ/target
