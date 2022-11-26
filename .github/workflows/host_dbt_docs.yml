@@ -92,11 +92,15 @@ jobs:
         with:
           name: "cypress.json"
           json: ${{ secrets.CYPRESS_CONFIG_JSON }}
+          dir: 'src/'
+
 
       - uses: jsdaniell/create-json@1.1.2
         with:
           name: "cypress.yaml"
           json: ${{ secrets.CYPRESS_CONFIG_JSON }}
+          dir: 'src/'
+
 
       # - name: (Windows) create dbt profiles (.yml)
       #   if: runner.os == 'Windows'
