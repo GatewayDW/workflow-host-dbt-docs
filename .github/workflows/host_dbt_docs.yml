@@ -54,44 +54,46 @@ jobs:
       #   run: dbt deps
       #   working-directory: ${{ inputs.dbt_project_path }}
 
-      # - name: (Windows) create dbt model (.sql) to document current CI build no.
-      #   if: runner.os == 'Windows'
-      #   run: |
-      #     $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
-      #     $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+      - name: (Windows) create dbt model (.sql) to document current workflow metadata.
+        if: runner.os == 'Windows'
+        run: |
+          $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
+          $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
 
-      #     mkdir $output_dir -Force
+          mkdir $output_dir -Force
           
-      #     $content = echo "
-      #       {{ config(
-      #           materialized='view',
-      #           schema='${{ env.DBT_SCHEMA }}',
-      #         ) }}
+          $content = echo "
+            {{ config(
+                materialized='view',
+                schema='${{ env.DBT_SCHEMA }}',
+              ) }}
 
-      #       -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
-      #       select
-      #         '${{ github.repositoryUrl }}' as repo_url,
-      #         '${{ github.sha }}' as repo_sha,
+            -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+            select
+              '${{ github.repositoryUrl }}' as repo_url,
 
-      #         '${{ github.workflow }}' as workflow_name,
-      #         '${{ github.ref }}' as workflow_trigger,
-      #         '${{ github.run_number }}' as build_no,
-      #         '${{ github.run_attempt }}' as build_run_attempt,
+              '${{ github.workflow }}' as workflow_name,
+              '${{ github.ref }}' as workflow_trigger,
+              '${{ github.sha }}' as last_merge_commit,
+              '${{ github.event_name }}' as trigger_event,
+              '${{ github.base_ref }}' as branch_from_merge,
+              '${{ github.run_number }}' as build_no,
+              '${{ github.run_attempt }}' as build_run_attempt,
               
-      #         '${{ github.actor }}' as actor,
-      #         '${{ runner.name }}' as runner_name,
-      #         '${{ runner.os }}' as runner_os,
-      #         '${{ runner.arch }}' as runner_arch
-      #     "
+              '${{ github.actor }}' as actor,
+              '${{ runner.name }}' as runner_name,
+              '${{ runner.os }}' as runner_os,
+              '${{ runner.arch }}' as runner_arch
+          "
           
-      #     Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
 
-      #     # Convert to UTF-8 No BOM
-      #     $MyFile = Get-Content $output_path
-      #     $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-      #     [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+          # Convert to UTF-8 No BOM
+          $MyFile = Get-Content $output_path
+          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      - name: (Windows) Write file
+      - name: (Windows) create dbt profiles (.yml)
         if: runner.os == 'Windows'
         env:
           SECRETS_DBT_PROFILE: "${{ secrets.secrets_dbt_profile }}"
@@ -114,18 +116,9 @@ jobs:
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      # - uses: jsdaniell/create-json@1.1.2
-      #   with:
-      #     name: "cypress.json"
-      #     json: ${{ secrets.CYPRESS_CONFIG_JSON }}
-      #     dir: ${{ inputs.dbt_project_path }}
-
-
-      # - uses: jsdaniell/create-json@1.1.2
-      #   with:
-      #     name: "cypress.yaml"
-      #     json: ${{ secrets.NO_ENV_CYPRESS_CONFIG_JSON }}
-      #     dir: ${{ inputs.dbt_project_path }}
+      - name: dbt debug
+        run: dbt debug --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}  
 
       # - name: (Windows) create dbt profiles (.yml)
       #   if: runner.os == 'Windows'
@@ -172,7 +165,6 @@ jobs:
 
 
       # - name: dbt run ${{ env.DBT_MODEL_GHA_METADATA }}
-      #   if: runner.os == 'Windows'
       #   run: dbt run --select ${{ env.DBT_MODEL_GHA_METADATA }} --profiles-dir .
       #   working-directory: ${{ inputs.dbt_project_path }}  
 
