@@ -96,7 +96,7 @@ jobs:
         run: |
           Get-ChildItem Env:
 
-          $output_dir = "."
+          $output_dir = "${{ inputs.dbt_project_path }}"
           $output_path = "$output_dir/secrets_dbt_profile.json"
 
           mkdir $output_dir -Force
