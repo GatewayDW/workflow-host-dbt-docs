@@ -92,14 +92,14 @@ jobs:
         with:
           name: "cypress.json"
           json: ${{ secrets.CYPRESS_CONFIG_JSON }}
-          dir: 'src/'
+          dir: ${{ inputs.dbt_project_path }}
 
 
       - uses: jsdaniell/create-json@1.1.2
         with:
           name: "cypress.yaml"
           json: ${{ secrets.CYPRESS_CONFIG_JSON }}
-          dir: 'src/'
+          dir: ${{ inputs.dbt_project_path }}
 
 
       # - name: (Windows) create dbt profiles (.yml)
