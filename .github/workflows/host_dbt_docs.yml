@@ -114,11 +114,13 @@ jobs:
                 dev:
                   type: sqlserver
                   driver: 'ODBC Driver 17 for SQL Server'
-                  server: ${DBT_SERVER}
-                  database: ${DBT_DATABASE}
+                  server: '${DBT_SERVER}'
+                  database: '${DBT_DATABASE}'
                   schema: dbo
-                  user: ${DBT_USER}
-                  password: ${DBT_PASSWORD}
+                  user: '${DBT_USER}'
+                  password: '$DBT_PASSWORD'
+                  password: '${DBT_PASSWORD}'
+                  password: '${{ secrets.DBT_PASSWORD }}'
                   trust_cert: true
           "
           
