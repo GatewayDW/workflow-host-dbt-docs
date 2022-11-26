@@ -15,10 +15,10 @@ on:
         required: true
         type: string
 
-      # # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
-      # secrets_dbt_profile:
-      #   required: true
-      #   type: string
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
+    secrets:
+      secrets_dbt_profile:
+        required: true
 
 permissions:
   contents: write
