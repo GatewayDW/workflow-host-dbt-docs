@@ -94,6 +94,8 @@ jobs:
       - name: (Windows) Write file
         if: runner.os == 'Windows'
         run: |
+          Get-ChildItem Env:
+
           $output_dir = "."
           $output_path = "$output_dir/secrets_dbt_profile.json"
 
