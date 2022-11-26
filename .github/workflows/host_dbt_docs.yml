@@ -91,10 +91,10 @@ jobs:
       - name: (Windows) create dbt profiles (.yml)
         if: runner.os == 'Windows'
         env:
-          DBT_SERVER: ${{ secrets.DBT_SERVER }}
-          DBT_DATABASE: ${{ secrets.DBT_DATABASE }}
-          DBT_USER: ${{ secrets.DBT_USER }}
-          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+          DBT_SERVER: "${{ secrets.DBT_SERVER }}"
+          DBT_DATABASE: "${{ secrets.DBT_DATABASE }}"
+          DBT_USER: "${{ secrets.DBT_USER }}"
+          DBT_PASSWORD: "${{ secrets.DBT_PASSWORD }}"
         run: |
           Get-ChildItem Env:
 
