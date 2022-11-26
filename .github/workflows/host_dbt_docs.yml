@@ -93,6 +93,8 @@ jobs:
 
       - name: (Windows) Write file
         if: runner.os == 'Windows'
+        env:
+          SECRETS_DBT_PROFILE: "${{ secrets.secrets_dbt_profile }}"
         run: |
           Get-ChildItem Env:
 
@@ -102,7 +104,7 @@ jobs:
           mkdir $output_dir -Force
           
           $content = echo "
-            ${{ inputs.secrets_dbt_profile }}
+            ${{ secrets.secrets_dbt_profile }}
           "
           
           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
