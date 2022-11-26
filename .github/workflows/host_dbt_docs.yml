@@ -28,14 +28,6 @@ env:
   DBT_SCHEMA: "ghactions"
   
 jobs:
-  # triage:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/labeler@v4
-  #     with:
-  #       repo-token: ${{ secrets.token }}
-  #       configuration-path: ${{ inputs.config-path }}
-
   build:  
     runs-on: ${{ inputs.runner_type }} # self-hosted # environment to be used
     environment: dev
