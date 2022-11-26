@@ -15,7 +15,10 @@ on:
         required: true
         type: string
 
-      
+      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
+      secrets_dbt_profile:
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -51,34 +54,53 @@ jobs:
       #   run: dbt deps
       #   working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: (Windows) create dbt model (.sql) to document current CI build no.
+      # - name: (Windows) create dbt model (.sql) to document current CI build no.
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
+      #     $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+
+      #     mkdir $output_dir -Force
+          
+      #     $content = echo "
+      #       {{ config(
+      #           materialized='view',
+      #           schema='${{ env.DBT_SCHEMA }}',
+      #         ) }}
+
+      #       -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+      #       select
+      #         '${{ github.repositoryUrl }}' as repo_url,
+      #         '${{ github.sha }}' as repo_sha,
+
+      #         '${{ github.workflow }}' as workflow_name,
+      #         '${{ github.ref }}' as workflow_trigger,
+      #         '${{ github.run_number }}' as build_no,
+      #         '${{ github.run_attempt }}' as build_run_attempt,
+              
+      #         '${{ github.actor }}' as actor,
+      #         '${{ runner.name }}' as runner_name,
+      #         '${{ runner.os }}' as runner_os,
+      #         '${{ runner.arch }}' as runner_arch
+      #     "
+          
+      #     Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+
+      #     # Convert to UTF-8 No BOM
+      #     $MyFile = Get-Content $output_path
+      #     $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+      #     [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+
+      - name: (Windows) Write file
         if: runner.os == 'Windows'
         run: |
-          $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
-          $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+          $output_dir = "."
+          $output_path = "$output_dir/secrets_dbt_profile.json"
 
           mkdir $output_dir -Force
           
           $content = echo "
-            {{ config(
-                materialized='view',
-                schema='${{ env.DBT_SCHEMA }}',
-              ) }}
-
-            -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
-            select
-              '${{ github.repositoryUrl }}' as repo_url,
-              '${{ github.sha }}' as repo_sha,
-
-              '${{ github.workflow }}' as workflow_name,
-              '${{ github.ref }}' as workflow_trigger,
-              '${{ github.run_number }}' as build_no,
-              '${{ github.run_attempt }}' as build_run_attempt,
-              
-              '${{ github.actor }}' as actor,
-              '${{ runner.name }}' as runner_name,
-              '${{ runner.os }}' as runner_os,
-              '${{ runner.arch }}' as runner_arch
+            ${{ inputs.secrets_dbt_profile }}
           "
           
           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
@@ -88,19 +110,18 @@ jobs:
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      - uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "cypress.json"
-          json: ${{ secrets.CYPRESS_CONFIG_JSON }}
-          dir: ${{ inputs.dbt_project_path }}
+      # - uses: jsdaniell/create-json@1.1.2
+      #   with:
+      #     name: "cypress.json"
+      #     json: ${{ secrets.CYPRESS_CONFIG_JSON }}
+      #     dir: ${{ inputs.dbt_project_path }}
 
 
-      - uses: jsdaniell/create-json@1.1.2
-        with:
-          name: "cypress.yaml"
-          json: ${{ secrets.NO_ENV_CYPRESS_CONFIG_JSON }}
-          dir: ${{ inputs.dbt_project_path }}
-
+      # - uses: jsdaniell/create-json@1.1.2
+      #   with:
+      #     name: "cypress.yaml"
+      #     json: ${{ secrets.NO_ENV_CYPRESS_CONFIG_JSON }}
+      #     dir: ${{ inputs.dbt_project_path }}
 
       # - name: (Windows) create dbt profiles (.yml)
       #   if: runner.os == 'Windows'
