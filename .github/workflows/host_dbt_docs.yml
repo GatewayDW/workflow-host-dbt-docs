@@ -1,4 +1,4 @@
-name: Host dbt doc on website
+name: Host dbt docs on Github Pages
 
 on:
   workflow_call:
