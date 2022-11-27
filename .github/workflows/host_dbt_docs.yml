@@ -168,12 +168,11 @@ jobs:
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
         
-      - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
+      - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'site'.
         uses: actions/upload-artifact@v1
         with:
           name: artifact
-          # path: ${{ inputs.dbt_project_path }}/target # etl/CDW_FB_SQ
-          path: ${{ inputs.dbt_project_path }} # etl/CDW_FB_SQ
+          path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
       
 
   deploy:
