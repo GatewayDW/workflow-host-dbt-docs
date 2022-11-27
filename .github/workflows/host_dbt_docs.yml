@@ -30,9 +30,10 @@ env:
 jobs:
   build:  
     runs-on: ${{ inputs.runner_type }} # self-hosted # environment to be used
-    environment: dev
+    # environment: dev
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
       
       - name: Setup Python
         uses: actions/setup-python@v2
@@ -108,7 +109,7 @@ jobs:
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
 
-      - name: dbt debug
+      - name: dbt test db connection
         run: dbt debug --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}  
 
@@ -168,7 +169,9 @@ jobs:
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
         
-      - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'site'.
+        # Workaround when using Windows runner
+        #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+      - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
         uses: actions/upload-artifact@v1
         with:
           name: artifact
@@ -180,7 +183,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - uses: actions/checkout@v3
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
 
       - name: Download Artifacts 🔻 # The built project is downloaded into the 'artifact' folder.
         uses: actions/download-artifact@v1
@@ -191,7 +195,7 @@ jobs:
       #   run: |
       #     ls -R
       
-      - name: Deploy
+      - name: Deploy to branch gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
         with: 
           folder: artifact # etl/CDW_FB_SQ/target
