@@ -84,6 +84,7 @@ jobs:
           $MyFile = Get-Content $output_path
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+        working-directory: ${{ inputs.dbt_project_path }}
 
       - name: (Windows) create dbt profiles (.yml)
         if: runner.os == 'Windows'
@@ -107,6 +108,13 @@ jobs:
           $MyFile = Get-Content $output_path
           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: recursively to check current and subdirectory
+        if: runner.os == 'Windows'
+        run: |
+          dir /s
+        working-directory: ${{ inputs.dbt_project_path }}
 
       - name: dbt test db connection
         run: dbt debug --profiles-dir .
