@@ -113,7 +113,7 @@ jobs:
       - name: recursively to check current and subdirectory
         if: runner.os == 'Windows'
         run: |
-          dir /s
+          Get-ChildItem -Recurse
         working-directory: ${{ inputs.dbt_project_path }}
 
       - name: dbt test db connection
