@@ -1,95 +1,50 @@
-# template_ETL_repo
-This repo is used as the template when creating new repository.
-
-## What is inside the template
-1. Issue template (.github/ISSUE_TEMPLATE/*.md)
-2. Pull Request template (.github/PULL_REQUEST_TEMPLATE.md)
-3. Skeleton Folders
-4. Python requirements (environment_*.yml) ([pls use conda to install](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file))
-
-## Steps to create new repo using template:
-1. Create new repository or simply click the button "Use this template"
-2. Select this repo from "Repository template"
-3. Copy from [here](https://github.com/sfbrigade/data-science-wg/blob/master/dswg_project_resources/Project-README-template.md) paste and edit the followings as your `readme.md` in root folder
-
-
 ## GitHub Actions - host dbt docs on website (Reusable workflow)
+This is the Github Action to host dbt docs on GitHub pages when there is changes in the repo.
 
-https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE&feature=youtu.be
+Example of dbt docs:
+![](asset/dbt-docs-1.png)
+![](asset/dbt-docs-2.png)
 
-1.  Create a ci.yml file
-2.  If it is self-hosted, the deploy site will be generated automatically
-3.  Otherwise, go settings > pages
-    Source: deploy from a branch
-    Branch: gh-pages - /(root)
-    Then, the build and deploy workflow will start automatically
+Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 
-
-```yaml
- name: Host dbt doc on website
-
-on:
-  workflow_call: 
-    inputs:  #set up parameters
-      env:
-        required: true
-        type: string
-      path:
-        required: true
-        type: string
-      folderpath:
-        required: true
-        type: string
-
-permissions:
-  contents: write
+### Steps to use this GitHub Workflow
+1. Check if there is secret `DBT_PROFILE` created in repo > Secrets
   
-jobs:
+2. Copy the dbt profile config from profiles.yml to Github > your repo > Settings > Secrets > Actions > New repository secret
+    Name: DBT_PROFILE
+    Value: <dbt profile config>
+    dbt profiles documentation https://docs.getdbt.com/reference/profiles.yml
 
-  build:  
-    runs-on: ${{ inputs.env }} # self-hosted # environment to be used
+3. From the caller repository, create a .yml file in the .github/workflows folder (see the example repo https://github.com/GatewayDW/test_ghw_dbt_docs/blob/main/.github/workflows/call_host_dbt_docs.yml)
+  ```yml
+  name: Build and Deploy dbt docs to Github Pages
+
+  on:
+    pull_request:
+      branches: [main]
+
+    push:
+      branches:
+        - main
+    # workflow_dispatch:
     
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-        
-      - name: Install dbt
-        run: pip install dbt-sqlserver
-        
-      - name: Install dbt deps
-        run: dbt deps
-        working-directory: ${{ inputs.path }}
-        
-      - name: dbt docs gen
-        run: dbt docs generate --profiles-dir .
-        working-directory: ${{ inputs.path }} # directory of the profiles.yml
-        
-      - name: Upload Artifacts 🔺 # The project is then uploaded as an artifact named 'site'.
-        uses: actions/upload-artifact@v1
-        with:
-          name: site
-          path: ${{ inputs.path }} # etl/CDW_FB_SQ
-      
+  jobs:
+    call-workflow:
+      uses: GatewayDW/workflow-host-dbt-docs/.github/workflows/host_dbt_docs.yml@main
+      with:
+        runner_type: self-hosted
+        dbt_project_path: <dbt project relative path e.g. etl/DOR>
 
-  deploy:
-    needs: [build] # prerequisite action
-    runs-on: ubuntu-latest
+      # https://docs.github.com/en/actions/using-workflows/reusing-workflows#passing-inputs-and-secrets-to-a-reusable-workflow
 
-    steps:
-      - uses: actions/checkout@v3
+      secrets:
+        secrets_dbt_profile: ${{ secrets.DBT_PROFILE }}
+  ```
 
-      - name: Download Artifacts 🔻 # The built project is downloaded into the 'site' folder.
-        uses: actions/download-artifact@v1
-        with:
-          name: site
+4. Make changes in your repo, commit and push to main branch. The workflow will be triggered based on the trigger condition in step 3 `on` block [Ref: Workflow Trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows).
 
-      
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
-        with: 
-          folder: ${{ inputs.folderpath }} # etl/CDW_FB_SQ/target
-```
+5. For the 1st time CI execution, there will be an new branch `gh-pages` created. Go to settings > Pages > Select `gh-pages` branch > Save.
+![](asset/gh-pages.png)
+
+6. A new workflow will be created and executed automatically after step 5. The dbt docs will be hosted on the website.
+![](asset/cicd-pages.png)

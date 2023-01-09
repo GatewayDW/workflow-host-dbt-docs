@@ -7,10 +7,6 @@ on:
         required: true
         type: string
 
-      dbt_project_name:
-        required: true
-        type: string    
-
       dbt_project_path:
         required: true
         type: string
