@@ -44,7 +44,8 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 4. Make changes in your repo, commit and push to main branch. The workflow will be triggered based on the trigger condition in step 3 `on` block [Ref: Workflow Trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows).
 
 5. For the 1st time CI execution, there will be an new branch `gh-pages` created. Go to settings > Pages > Select `gh-pages` branch > Save.
+   For subsequent CI execution, the dbt docs metadata will be updated in the `gh-pages` branch.
 ![](asset/gh-pages.png)
 
-6. A new workflow will be created and executed automatically after step 5. The dbt docs will be hosted on the website.
+1. A new workflow will be created and executed automatically after step 5 and subsequent repo update actions. The dbt docs will be hosted on the website.
 ![](asset/cicd-pages.png)
