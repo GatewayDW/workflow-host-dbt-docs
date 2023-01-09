@@ -101,7 +101,7 @@ jobs:
           $content = echo "
             ${{ secrets.secrets_dbt_profile }}
           "
-          $content = echo "%SECRETS_DBT_PROFILE%"
+          $content = echo "$env:SECRETS_DBT_PROFILE"
           
           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
 
