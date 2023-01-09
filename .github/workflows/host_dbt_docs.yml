@@ -120,7 +120,7 @@ jobs:
                 trust_cert: true          
           "
           
-          Out-File -FilePath $output_path -InputObject $content3 -Encoding utf8
+          Out-File -FilePath $output_path -InputObject $content1 -Encoding utf8
 
           # Convert to UTF-8 No BOM
           $MyFile = Get-Content $output_path
