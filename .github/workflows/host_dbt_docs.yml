@@ -94,16 +94,31 @@ jobs:
           Get-ChildItem Env:
 
           $output_dir = "${{ inputs.dbt_project_path }}"
-          $output_path = "$output_dir/profiles.json"
+          $output_path = "$output_dir/profiles.yml"
 
           mkdir $output_dir -Force
           
-          $content = echo "
+          $content1 = echo "
             ${{ secrets.secrets_dbt_profile }}
           "
-          $content = echo "$env:SECRETS_DBT_PROFILE"
+          $content2 = echo "$env:SECRETS_DBT_PROFILE"
+          $content3 = echo "
+          test:
+            target: dev
+            outputs:
+              dev:
+                type: sqlserver
+                driver: 'ODBC Driver 17 for SQL Server' # (The ODBC Driver installed on your system)
+                server: gw6-dev.gateway.net
+                database: TEST
+                port: 1433
+                schema: dbo
+                user: dbt_runner
+                password: PASSWORD
+                trust_cert: true          
+          "
           
-          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+          Out-File -FilePath $output_path -InputObject $content3 -Encoding utf8
 
           # Convert to UTF-8 No BOM
           $MyFile = Get-Content $output_path
