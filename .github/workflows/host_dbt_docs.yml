@@ -51,6 +51,7 @@ jobs:
         run: |
           $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
           $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+          $output_path = "${{ env.DBT_MODEL_GHA_METADATA }}.sql"
 
           mkdir $output_dir -Force
           
@@ -95,6 +96,7 @@ jobs:
 
           $output_dir = "${{ inputs.dbt_project_path }}"
           $output_path = "$output_dir/profiles.yml"
+          $output_path = "profiles.yml"
 
           mkdir $output_dir -Force
           
