@@ -25,7 +25,7 @@ env:
   
 jobs:
   build:  
-    runs-on: [ self-hosted, "${{ github.event.inputs.server-target }}" ] 
+    runs-on: [ self-hosted, "${{ inputs.runner_type }}" ]
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
