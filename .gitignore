@@ -1,0 +1,18 @@
+# Source Data
+Data
+data
+
+# Logs
+log
+
+# DB Source File
+DB_Datafiles/
+
+# Exclude "Archive"
+Archive/
+
+# Release
+release/
+
+# Config - Common configuration files
+config/commo

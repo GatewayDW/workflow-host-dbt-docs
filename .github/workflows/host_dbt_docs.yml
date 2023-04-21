@@ -1,0 +1,184 @@
+name: Host dbt docs on Github Pages
+
+on:
+  workflow_call:
+    inputs:
+      # If you want to use a runner connect to both Windows Auth/ SQL Login, you need to specify the runner_type: .ca
+      # Example: https://github.com/GatewayDW/test_ghw_dbt_docs/actions/runs/4442330028
+      # If you want to use a runner connect to both SQL Login only, you need to specify the runner_type: self-hosted
+      # Example: https://github.com/GatewayDW/test_ghw_dbt_docs/actions/runs/4442378575
+      runner_type: # self-hosted | .ca
+        required: true
+        type: string
+
+      dbt_project_path: # etl/dbt
+        required: true
+        type: string
+
+    # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
+    # Create a secret named "DBT_PROFILE" under repo "Settings > Secrets and variables > Actions > New repository secret"
+    # Copy and paste the value from "<your username> / .dbt / profiles.yml" as the secret value
+    secrets:
+      secrets_dbt_profile: #${{ secrets.DBT_PROFILE }}
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  DBT_MODEL_GHA_METADATA: "github_actions_metadata"
+  DBT_SCHEMA: "ghactions"
+  
+jobs:
+  build:  
+    runs-on: [ self-hosted, "${{ inputs.runner_type }}" ]
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+        
+      - name: Install dbt
+        run: pip install dbt-sqlserver==1.3.0
+        
+      - name: Install dbt deps
+        run: dbt deps
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: (Windows) create dbt model (.sql) to document current workflow metadata.
+        if: runner.os == 'Windows'
+        run: |
+          $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
+          $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+          $output_path = "${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+
+          mkdir $output_dir -Force
+          
+          $content = echo "
+            {{ config(
+                materialized='view',
+                schema='${{ env.DBT_SCHEMA }}',
+              ) }}
+
+            -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+            select
+              '${{ github.repositoryUrl }}' as repo_url,
+
+              '${{ github.workflow }}' as workflow_name,
+              '${{ github.ref }}' as workflow_trigger,
+              '${{ github.sha }}' as last_merge_commit,
+              '${{ github.event_name }}' as trigger_event,
+              '${{ github.base_ref }}' as branch_from_merge,
+              '${{ github.run_number }}' as build_no,
+              '${{ github.run_attempt }}' as build_run_attempt,
+              
+              '${{ github.actor }}' as actor,
+              '${{ runner.name }}' as runner_name,
+              '${{ runner.os }}' as runner_os,
+              '${{ runner.arch }}' as runner_arch
+          "
+          
+          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+
+          # Convert to UTF-8 No BOM
+          $MyFile = Get-Content $output_path
+          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: (Windows) create dbt profiles (.yml)
+        if: runner.os == 'Windows'
+        env:
+          SECRETS_DBT_PROFILE: "${{ secrets.secrets_dbt_profile }}"
+        run: |
+          Get-ChildItem Env:
+
+          $output_dir = "${{ inputs.dbt_project_path }}"
+          $output_path = "$output_dir/profiles.yml"
+          $output_path = "profiles.yml"
+
+          mkdir $output_dir -Force
+          
+          $content1 = echo "
+            ${{ secrets.secrets_dbt_profile }}
+          "
+          $content2 = echo "$env:SECRETS_DBT_PROFILE"
+          $content3 = echo "
+          test:
+            target: dev
+            outputs:
+              dev:
+                type: sqlserver
+                driver: 'ODBC Driver 17 for SQL Server' # (The ODBC Driver installed on your system)
+                server: SERVER_NAME
+                database: TEST
+                port: 1433
+                schema: dbo
+                user: USERNAME
+                password: PASSWORD
+                trust_cert: true          
+          "
+          
+          Out-File -FilePath $output_path -InputObject $content2 -Encoding utf8
+
+          # Convert to UTF-8 No BOM
+          $MyFile = Get-Content $output_path
+          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: recursively to check current and subdirectory
+        if: runner.os == 'Windows'
+        run: |
+          Get-ChildItem -Recurse
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: dbt test db connection
+        run: dbt debug --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}  
+
+      - name: dbt run ${{ env.DBT_MODEL_GHA_METADATA }}
+        run: dbt run --select ${{ env.DBT_MODEL_GHA_METADATA }} --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}  
+
+      - name: dbt docs gen
+        run: dbt docs generate --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: dbt compile
+        run: dbt compile --profiles-dir .
+        working-directory: ${{ inputs.dbt_project_path }}
+        
+        # Workaround when using Windows runner
+        #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+      - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
+        uses: actions/upload-artifact@v1
+        with:
+          name: artifact
+          path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
+      
+
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Download Artifacts 🔻 # The built project is downloaded into the 'artifact' folder.
+        uses: actions/download-artifact@v1
+        with:
+          name: artifact
+
+      # - name: ls recursively to check current and subdirectory
+      #   run: |
+      #     ls -R
+      
+      - name: Deploy to branch gh-pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with: 
+          folder: artifact # e.g. etl/CDW_FB_SQ/target
