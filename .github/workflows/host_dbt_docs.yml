@@ -136,7 +136,7 @@ jobs:
           path: "${{ inputs.dbt_project_path }}/profiles.yml"
           write-mode: overwrite
           contents: |
-            console.log($env:SECRETS_DBT_PROFILE")
+            ${{ secrets.DBT_PROFILE }}
 
 
       - name: recursively to check current and subdirectory
