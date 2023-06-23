@@ -15,4 +15,9 @@ Archive/
 release/
 
 # Config - Common configuration files
-config/commo
+config/Common
+
+# Credentials Management
+profiles.yml
+mage/io_config.yaml
+*.env
