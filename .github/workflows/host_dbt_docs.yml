@@ -41,6 +41,12 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install pyodbc
+        run: pip install pyodbc
+
+      - name: Install dbt
+        run: pip install dbt-sqlserver==1.4.3
+
       - name: Install SQL Server ODBC Driver 17
         if: runner.os != 'Windows'
         run: |
@@ -66,7 +72,7 @@ jobs:
           sudo apt-get install -y unixodbc-dev
         shell: bash
 
-      - name: Install SQL Server ODBC Driver 17
+      - name: Install SQL Server ODBC Driver 18
         if: runner.os != 'Windows'
         run: |
           if ! [[ "18.04 20.04 22.04 22.10" == *"$(lsb_release -rs)"* ]];
@@ -99,9 +105,6 @@ jobs:
           sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
         shell: bash
 
-      - name: Install dbt
-        run: pip install dbt-sqlserver==1.4.3
-        
       - name: Install dbt deps
         run: dbt deps
         working-directory: ${{ inputs.dbt_project_path }}
