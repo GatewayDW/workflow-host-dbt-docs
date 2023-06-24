@@ -70,6 +70,7 @@ jobs:
           source ~/.bashrc
           # optional: for unixODBC development headers
           sudo apt-get install -y unixodbc-dev
+          sudo apt-get update
         shell: bash
 
       - name: Install SQL Server ODBC Driver 18
@@ -95,6 +96,7 @@ jobs:
           source ~/.bashrc
           # optional: for unixODBC development headers
           sudo apt-get install -y unixodbc-dev
+          sudo apt-get update
         shell: bash
 
       - name: Modify OpenSSL config
