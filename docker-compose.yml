@@ -3,7 +3,11 @@ version: '2.3'
 services:
   worker:
     platform: linux/amd64
-    image: myoung34/github-runner:latest
+    build:
+      context: gha-self-hosted-runner
+      dockerfile: Dockerfile
+    image: runner
+    # image: myoung34/github-runner:latest
     environment:
       LABELS: linux,arm64,docker-compose
     env_file:
