@@ -76,4 +76,4 @@ Self-hosted runners can connect to on-premise machines or cloud VMs. You can use
 1. In terminal, run the following command to stop the self-hosted runner
    ```bash
    docker-compose down
-   ```s
+   ```
