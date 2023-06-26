@@ -53,6 +53,8 @@ jobs:
           ./config
           make
           sudo make install
+          sudo ldconfig
+          openssl version
 
           chmod +rwx /etc/ssl/openssl.cnf
           echo "MinProtocol = TLSv1.0" >> /etc/ssl/openssl.cnf
