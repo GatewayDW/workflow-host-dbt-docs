@@ -25,7 +25,9 @@ RUN apt -y install unixodbc-dev
 # Ref: https://github.com/mkleehammer/pyodbc/issues/610
 # https://askubuntu.com/questions/1284658/how-to-fix-microsoft-odbc-driver-17-for-sql-server-ssl-provider-ssl-choose-cli/1289910#1289910
 # https://stackoverflow.com/questions/75133118/upgrade-openssl-in-docker
-RUN apt -y upgrade openssl
+COPY upgrade_openssl.sh /usr/src/upgrade_openssl.sh
+RUN chmod +x /usr/src/upgrade_openssl.sh
+RUN /usr/src/upgrade_openssl.sh
 
 # Add the following settings to /etc/ssl/openssl.cnf
 ## MinProtocol = TLSv1.0
