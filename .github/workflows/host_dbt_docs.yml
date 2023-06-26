@@ -55,8 +55,8 @@ jobs:
           sudo make install
 
           chmod +rwx /etc/ssl/openssl.cnf
-          sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
-          sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
+          echo "MinProtocol = TLSv1.0" >> /etc/ssl/openssl.cnf
+          echo "CipherString = DEFAULT@SECLEVEL=1" >> /etc/ssl/openssl.cnf
         shell: bash
         working-directory: ${{ inputs.dbt_project_path }}
 
