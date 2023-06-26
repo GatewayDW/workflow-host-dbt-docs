@@ -58,6 +58,7 @@ jobs:
           sed -i 's/TLSv1.2/TLSv1/g' /etc/ssl/openssl.cnf
           sed -i 's/SECLEVEL=2/SECLEVEL=1/g' /etc/ssl/openssl.cnf
         shell: bash
+        working-directory: ${{ inputs.dbt_project_path }}
 
       - name: Install dbt
         run: pip install dbt-sqlserver==1.4.3
