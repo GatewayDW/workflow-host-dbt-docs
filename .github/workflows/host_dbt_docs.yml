@@ -44,23 +44,23 @@ jobs:
 #      - name: Install pyodbc
 #        run: pip install pyodbc
 
-      - name: Upgrade OpenSSL and modify config
-        if: runner.os != 'Windows'
-        run: |
-          wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz -O openssl-1.1.1p.tar.gz
-          tar -zxvf openssl-1.1.1p.tar.gz
-          cd openssl-1.1.1p
-          ./config
-          make
-          sudo make install
-          sudo ldconfig
-          openssl version
+      # - name: Upgrade OpenSSL and modify config
+      #   if: runner.os != 'Windows'
+      #   run: |
+      #     wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz -O openssl-1.1.1p.tar.gz
+      #     tar -zxvf openssl-1.1.1p.tar.gz
+      #     cd openssl-1.1.1p
+      #     ./config
+      #     make
+      #     sudo make install
+      #     sudo ldconfig
+      #     openssl version
 
-          chmod +rwx /etc/ssl/openssl.cnf
-          echo "MinProtocol = TLSv1.0" >> /etc/ssl/openssl.cnf
-          echo "CipherString = DEFAULT@SECLEVEL=1" >> /etc/ssl/openssl.cnf
-        shell: bash
-        working-directory: ${{ inputs.dbt_project_path }}
+      #     chmod +rwx /etc/ssl/openssl.cnf
+      #     echo "MinProtocol = TLSv1.0" >> /etc/ssl/openssl.cnf
+      #     echo "CipherString = DEFAULT@SECLEVEL=1" >> /etc/ssl/openssl.cnf
+      #   shell: bash
+      #   working-directory: ${{ inputs.dbt_project_path }}
 
       - name: Install dbt
         run: pip install dbt-sqlserver==1.4.3

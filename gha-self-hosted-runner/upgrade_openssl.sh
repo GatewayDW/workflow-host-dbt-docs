@@ -1,3 +1,4 @@
+# For Windows Docker Engine Host, change the "End of Line Sequence" to "LF" by pressing Ctrl+Shift+P and type "Change End of Line Sequence"
 wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz -O openssl-1.1.1p.tar.gz
 tar -zxvf openssl-1.1.1p.tar.gz
 cd openssl-1.1.1p
