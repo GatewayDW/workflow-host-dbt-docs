@@ -1,4 +1,9 @@
-## GitHub Actions - host dbt docs on website (Reusable workflow)
+# GitHub Actions - host dbt docs on website (Reusable workflow)
+- [GitHub Actions - host dbt docs on website (Reusable workflow)](#github-actions---host-dbt-docs-on-website-reusable-workflow)
+  - [Steps to use this GitHub Workflow](#steps-to-use-this-github-workflow)
+  - [Steps to spin up self-host GitHub Actions runner](#steps-to-spin-up-self-host-github-actions-runner)
+  - [Steps to stop self-host GitHub Actions runner](#steps-to-stop-self-host-github-actions-runner)
+
 This is the Github Action to host dbt docs on GitHub pages when there is changes in the repo.
 
 Example of dbt docs:
@@ -7,7 +12,7 @@ Example of dbt docs:
 
 Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 
-### Steps to use this GitHub Workflow
+## Steps to use this GitHub Workflow
 1. Check if there is secret `DBT_PROFILE` created in repo > Secrets
   
 2. Copy the dbt profile config from profiles.yml to Github > your repo > Settings > Secrets > Actions > New repository secret
@@ -47,5 +52,28 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
    For subsequent CI execution, the dbt docs metadata will be updated in the `gh-pages` branch.
 ![](asset/gh-pages.png)
 
-1. A new workflow will be created and executed automatically after step 5 and subsequent repo update actions. The dbt docs will be hosted on the website.
+6. A new workflow will be created and executed automatically after step 5 and subsequent repo update actions. The dbt docs will be hosted on the website.
 ![](asset/cicd-pages.png)
+
+## Steps to spin up self-host GitHub Actions runner
+Self-hosted runners can connect to on-premise machines or cloud VMs. You can use a self-hosted runner in a virtual network. Self-hosted runners offer more control of hardware, operating system, and software tools than GitHub-hosted runners provide.
+
+1. Copy file `credentials.yml.sample` and rename to `credentials.yml`
+2. Ensure that the `credentials.yml` is not committed to the repo
+3. Open the browser and go to [Create new self-hosted runner](https://github.com/organizations/GatewayDW/settings/actions/runners/new)
+4. Copy the token value from the instruction page (Note: the token might change after the runner is created, or periodically)
+   ![](asset/gha-runner-token.png)
+5. Paste the token value to `credentials.yml` file `RUNNER_TOKEN` field
+6. In terminal, run the following command to spin up the self-hosted runner
+   ```bash
+   docker-compose up
+   ```
+   ![](asset/docker-compose-up-log.png)
+7. In GitHub Actions Runner page, you should see the new runner is online
+   ![](asset/gha-runner-online.png)
+
+## Steps to stop self-host GitHub Actions runner
+1. In terminal, run the following command to stop the self-hosted runner
+   ```bash
+   docker-compose down
+   ```s

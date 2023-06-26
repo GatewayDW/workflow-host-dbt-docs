@@ -21,3 +21,4 @@ config/Common
 profiles.yml
 mage/io_config.yaml
 *.env
+.DS_Store

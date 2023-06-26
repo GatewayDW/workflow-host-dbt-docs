@@ -44,24 +44,6 @@ jobs:
 #      - name: Install pyodbc
 #        run: pip install pyodbc
 
-      # - name: Upgrade OpenSSL and modify config
-      #   if: runner.os != 'Windows'
-      #   run: |
-      #     wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz -O openssl-1.1.1p.tar.gz
-      #     tar -zxvf openssl-1.1.1p.tar.gz
-      #     cd openssl-1.1.1p
-      #     ./config
-      #     make
-      #     sudo make install
-      #     sudo ldconfig
-      #     openssl version
-
-      #     chmod +rwx /etc/ssl/openssl.cnf
-      #     echo "MinProtocol = TLSv1.0" >> /etc/ssl/openssl.cnf
-      #     echo "CipherString = DEFAULT@SECLEVEL=1" >> /etc/ssl/openssl.cnf
-      #   shell: bash
-      #   working-directory: ${{ inputs.dbt_project_path }}
-
       - name: Install dbt
         run: pip install dbt-sqlserver==1.4.3
 
@@ -159,8 +141,7 @@ jobs:
           contents: |
             ${{ secrets.secrets_dbt_profile }}
 
-
-      - name: recursively to check current and subdirectory
+      - name: (Windows) recursively to check current and subdirectory
         if: runner.os == 'Windows'
         run: |
           Get-ChildItem -Recurse
@@ -169,10 +150,6 @@ jobs:
       - name: dbt test db connection
         run: dbt debug --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}  
-
-      # - name: dbt run ${{ env.DBT_MODEL_GHA_METADATA }}
-      #   run: dbt run --select ${{ env.DBT_MODEL_GHA_METADATA }} --profiles-dir .
-      #   working-directory: ${{ inputs.dbt_project_path }}  
 
       - name: dbt docs gen
         run: dbt docs generate --profiles-dir .
@@ -190,7 +167,6 @@ jobs:
           name: artifact
           path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
       
-
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
