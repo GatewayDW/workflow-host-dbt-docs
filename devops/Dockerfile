@@ -10,15 +10,13 @@ RUN apt -y update
 RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
     ; then ACCEPT_EULA=Y apt-get install -y --allow-unauthenticated msodbcsql17 \
     ; fi
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
-    ; then echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc \
-    ; fi
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
-    ; then source ~/.bashrc \
-    ; fi
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
-    ; then apt -y install unixodbc-dev \
-    ; fi
+RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+# RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+#     ; then source ~/.bashrc \
+#     ; fi
+# RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+#     ; then apt -y install unixodbc-dev \
+#     ; fi
 
 # Install MS SQL Sever odbc server 18
 # https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=ubuntu18-install%2Cubuntu17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline#18
