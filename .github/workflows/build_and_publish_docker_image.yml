@@ -72,7 +72,7 @@ jobs:
           file: ./devops/Dockerfile
           # build-args: |
           #   PIPENVFILE=mage-el-requirements.txt
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ github.event.inputs.registry }}/${{ github.event.inputs.image_name1 }}:${{ github.event.inputs.tag }} , ${{ github.event.inputs.registry }}/${{ github.event.inputs.image_name1 }}:latest
           # labels: ${{ steps.meta.outputs.labels }}
