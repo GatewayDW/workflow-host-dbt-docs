@@ -5,10 +5,20 @@ FROM myoung34/github-runner:latest
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 RUN curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 RUN apt -y update
-RUN ACCEPT_EULA=Y apt -y install msodbcsql17
-RUN echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-RUN source ~/.bashrc
-RUN apt -y install unixodbc-dev
+# msodbcsql17 is not supported for ARM64 architecture (e.g. Mac M1)
+## For X86_64 (e.g. Windows, Mac Intel)
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+    ; then ACCEPT_EULA=Y apt-get install -y --allow-unauthenticated msodbcsql17 \
+    ; fi
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+    ; then echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc \
+    ; fi
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+    ; then source ~/.bashrc \
+    ; fi
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ] \
+    ; then apt -y install unixodbc-dev \
+    ; fi
 
 # Install MS SQL Sever odbc server 18
 # https://learn.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server?view=sql-server-ver16&tabs=ubuntu18-install%2Cubuntu17-install%2Cdebian8-install%2Credhat7-13-install%2Crhel7-offline#18
