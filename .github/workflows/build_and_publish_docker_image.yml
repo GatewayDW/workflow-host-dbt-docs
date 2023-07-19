@@ -23,7 +23,7 @@ on:
       image_name1:
         description: "Docker image name1"
         required: true
-        default: gatewaydw/workflow_host_dbt_docs
+        default: gatewaydw/workflow-host-dbt-docs
 
 jobs:
   push_to_registry:

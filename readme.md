@@ -58,8 +58,8 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 ## Steps to spin up self-host GitHub Actions runner
 Self-hosted runners can connect to on-premise machines or cloud VMs. You can use a self-hosted runner in a virtual network. Self-hosted runners offer more control of hardware, operating system, and software tools than GitHub-hosted runners provide.
 
-1. Copy file `credentials.yml.sample` and rename to `credentials.yml`
-2. Ensure that the `credentials.yml` is not committed to the repo
+1. Copy file `.env.sample` and rename to `.env`
+2. Ensure that the `.env` is not committed to the repo
 3. Open the browser and go to [Create new self-hosted runner](https://github.com/organizations/GatewayDW/settings/actions/runners/new)
 4. Copy the token value from the instruction page (Note: the token might change after the runner is created, or periodically)
    ![](asset/gha-runner-token.png)

@@ -6,12 +6,11 @@ services:
     build:
       context: devops
       dockerfile: Dockerfile
-    image: runner
-    # image: myoung34/github-runner:latest
+    image: ${IMAGE_REGISTRY}/${IMAGE_REPO}:latest
     environment:
       LABELS: linux,arm64,docker-compose
     env_file:
-      - credentials.env
+      - .env
     security_opt:
       # needed on SELinux systems to allow docker container to manage other docker containers
       - label:disable
