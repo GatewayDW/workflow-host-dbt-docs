@@ -4,7 +4,7 @@ services:
   worker:
     platform: linux/amd64
     build:
-      context: gha-self-hosted-runner
+      context: devops
       dockerfile: Dockerfile
     image: runner
     # image: myoung34/github-runner:latest
