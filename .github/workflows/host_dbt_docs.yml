@@ -165,7 +165,7 @@ jobs:
       
       - name: manifest upd
         run: python ${{ inputs.manifest_upd_script_path }}
-        working-directory: script/
+        working-directory: ${{ inputs.dbt_project_path }}
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
