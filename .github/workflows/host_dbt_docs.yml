@@ -15,6 +15,10 @@ on:
         required: true
         type: string
 
+      manifest_upd_script_path: # /home/src/script/upd_manifest.py
+        required: true
+        type: string
+
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
     # Create a secret named "DBT_PROFILE" under repo "Settings > Secrets and variables > Actions > New repository secret"
     # Copy and paste the value from "<your username> / .dbt / profiles.yml" as the secret value
@@ -158,9 +162,13 @@ jobs:
       - name: dbt compile
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
-        
+      
+      - name: manifest upd
+        run: python ${{ inputs.manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+
       - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
         uses: actions/upload-artifact@v1
         with:
