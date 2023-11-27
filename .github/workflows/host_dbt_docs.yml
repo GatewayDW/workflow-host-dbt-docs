@@ -15,7 +15,7 @@ on:
         required: true
         type: string
 
-      manifest_upd_script_path: # /home/src/script/upd_manifest.py
+      manifest_upd_script_path: # <dbt project folder>/upd_manifest.py
         required: true
         type: string
 
