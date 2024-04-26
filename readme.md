@@ -65,6 +65,7 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 2. Open the browser and go to [Create new self-hosted runner](https://github.com/organizations/GatewayDW/settings/actions/runners/new)
 3. Follow the steps to download the runner program
 4. Copy the token value from the instruction page (Note: the token might change after the runner is created, or periodically)
+   Paste it to `.env` file `RUNNER_TOKEN` field
    ![](asset/gha-runner-token.png)
 5. Execute the below script in root folder:
    ```cmd

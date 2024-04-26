@@ -3,11 +3,10 @@
 
 call .\script\99_set_env_base.bat
 call .\script\conda\00_start_venv_miniconda_v1.bat
-call .\script\99_set_env_base.bat
 
 @REM Start the GitHub Actions Self-Hosted Runner
 cd %GITHUB_ACTION_RUN_PATH%
-call %GITHUB_ACTION_RUN_PATH%/run.cmd
+call %GITHUB_ACTION_RUN_PATH%\run.cmd --token %RUNNER_TOKEN%
 
 REM Keep the window open to see the output (remove this line if running in background is preferred)
 pause
