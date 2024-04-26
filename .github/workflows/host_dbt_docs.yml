@@ -147,11 +147,11 @@ jobs:
           contents: |
             ${{ secrets.secrets_dbt_profile }}
 
-      - name: (Windows) recursively to check current and subdirectory
-        if: runner.os == 'Windows'
-        run: |
-          Get-ChildItem -Recurse
-        working-directory: ${{ inputs.dbt_project_path }}
+      # - name: (Windows) recursively to check current and subdirectory
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     Get-ChildItem -Recurse
+      #   working-directory: ${{ inputs.dbt_project_path }}
 
       - name: dbt test db connection
         run: dbt debug --profiles-dir .
@@ -172,7 +172,7 @@ jobs:
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
       - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
