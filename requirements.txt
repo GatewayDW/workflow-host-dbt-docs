@@ -1,0 +1,5 @@
+dbt-sqlserver==1.7.4
+
+# Credentials Management
+# python-dotenv
+keyring==24.3.1

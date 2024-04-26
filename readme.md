@@ -1,8 +1,8 @@
 # GitHub Actions - host dbt docs on website (Reusable workflow)
 - [GitHub Actions - host dbt docs on website (Reusable workflow)](#github-actions---host-dbt-docs-on-website-reusable-workflow)
   - [Steps to use this GitHub Workflow](#steps-to-use-this-github-workflow)
-  - [Steps to spin up self-host GitHub Actions runner](#steps-to-spin-up-self-host-github-actions-runner)
-  - [Steps to stop self-host GitHub Actions runner](#steps-to-stop-self-host-github-actions-runner)
+  - [Steps to spin up self-host GitHub Actions runner (using Docker)](#steps-to-spin-up-self-host-github-actions-runner-using-docker)
+  - [Steps to stop self-host GitHub Actions runner (using Docker)](#steps-to-stop-self-host-github-actions-runner-using-docker)
 
 This is the Github Action to host dbt docs on GitHub pages when there is changes in the repo.
 
@@ -55,7 +55,7 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 6. A new workflow will be created and executed automatically after step 5 and subsequent repo update actions. The dbt docs will be hosted on the website.
 ![](asset/cicd-pages.png)
 
-## Steps to spin up self-host GitHub Actions runner
+## Steps to spin up self-host GitHub Actions runner (using Docker)
 Self-hosted runners can connect to on-premise machines or cloud VMs. You can use a self-hosted runner in a virtual network. Self-hosted runners offer more control of hardware, operating system, and software tools than GitHub-hosted runners provide.
 
 1. Copy file `.env.sample` and rename to `.env`
@@ -72,7 +72,7 @@ Self-hosted runners can connect to on-premise machines or cloud VMs. You can use
 7. In GitHub Actions Runner page, you should see the new runner is online
    ![](asset/gha-runner-online.png)
 
-## Steps to stop self-host GitHub Actions runner
+## Steps to stop self-host GitHub Actions runner (using Docker)
 1. In terminal, run the following command to stop the self-hosted runner
    ```bash
    docker-compose down
