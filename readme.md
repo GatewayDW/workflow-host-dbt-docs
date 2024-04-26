@@ -46,6 +46,12 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
       secrets:
         secrets_dbt_profile: ${{ secrets.DBT_PROFILE }}
   ```
+> [!NOTE]
+> For the line `uses: GatewayDW/workflow-host-dbt-docs/.github/workflows/host_dbt_docs.yml@main`,
+> You can choose using the latest version of workflow or pin to a specific release tag (e.g. @1.2.3)
+> Beware that starting release 1.2.4 of this workflow, the default version of `dbt-sqlserver` has changed to `1.7.4`.
+> The newer version of `dbt-sqlserve` might discover some yaml problems on the codebase using version before 1.7.4
+> Example: https://github.com/GatewayDW/FIN_Site_Forecasting_Tool/pull/184
 
 4. Make changes in your repo, commit and push to main branch. The workflow will be triggered based on the trigger condition in step 3 `on` block [Ref: Workflow Trigger](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows).
 
@@ -58,7 +64,7 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 
 ## Steps to spin up self-hosted GitHub Actions runner (using conda)
 > [!NOTE]
-> There is an known issue on network issue when using Windows Server. (#71)
+> There is a known issue on network issue when using Windows Server. (#71)
 > The workaround is to use either Docker or other Windows PC (Check if it can connect to the target database first)
 
 1. [Setup the conda environment](/docs/setup_environment.md)
