@@ -38,7 +38,7 @@ jobs:
     runs-on: [ self-hosted, "${{ inputs.runner_type }}" ]
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: (Linux) Set up Python
         if: runner.os != 'Windows'
@@ -183,16 +183,16 @@ jobs:
 
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download Artifacts 🔻 # The built project is downloaded into the 'artifact' folder.
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: artifact
 
-      # - name: ls recursively to check current and subdirectory
-      #   run: |
-      #     ls -R
+      - name: ls recursively to check current and subdirectory
+        run: |
+          ls -R
       
       - name: Deploy to branch gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
