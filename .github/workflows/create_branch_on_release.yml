@@ -1,0 +1,23 @@
+name: Create Branch on Release
+
+on: # yamllint disable-line rule:truthy
+  release:
+    types: [published]
+
+jobs:
+  create-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Create branch with the same name as the release tag
+      run: |
+        TAG_NAME=${GITHUB_REF#refs/tags/}
+        BRANCH_NAME="release-${TAG_NAME}"
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+        git checkout -b "$BRANCH_NAME"
+        git push origin "$BRANCH_NAME"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
