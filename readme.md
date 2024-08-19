@@ -70,14 +70,16 @@ Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 1. [Setup the conda environment](/docs/setup_environment.md)
 2. Open the browser and go to [Create new self-hosted runner](https://github.com/organizations/GatewayDW/settings/actions/runners/new)
 3. Follow the steps to download the runner program
-4. Copy the token value from the instruction page (Note: the token might change after the runner is created, or periodically)
+4. Use the following settings when configuring the runner:
+   ![](asset/gha-runner-conda-setup.png)
+5. Copy the token value from the instruction page (Note: the token might change after the runner is created, or periodically)
    Paste it to `.env` file `RUNNER_TOKEN` field
    ![](asset/gha-runner-token.png)
-5. Execute the below script in root folder:
+6. Execute the below script in root folder:
    ```cmd
    call start_github_action_runner.bat
    ```
-6. To stop the runner, press `Ctrl + C` in the terminal. It is recommended to stop the runner when not in use.
+7. To stop the runner, press `Ctrl + C` in the terminal. It is recommended to stop the runner when not in use.
 
 ## Steps to spin up self-hosted GitHub Actions runner (using Docker)
 Self-hosted runners can connect to on-premise machines or cloud VMs. You can use a self-hosted runner in a virtual network. Self-hosted runners offer more control of hardware, operating system, and software tools than GitHub-hosted runners provide.
