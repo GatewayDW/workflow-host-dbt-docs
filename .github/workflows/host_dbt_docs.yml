@@ -177,6 +177,7 @@ jobs:
         with:
           name: artifact
           path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
+          retention-days: 3
       
   deploy:
     needs: [build]
