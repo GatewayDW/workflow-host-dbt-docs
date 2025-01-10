@@ -19,6 +19,10 @@ on:
         required: true
         type: string
 
+      catalog_manifest_upd_script_path: # <dbt project folder>/upd_catalog_manifest.py
+        required: true
+        type: string
+
     # https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-inputs-and-secrets-in-a-reusable-workflow
     # Create a secret named "DBT_PROFILE" under repo "Settings > Secrets and variables > Actions > New repository secret"
     # Copy and paste the value from "<your username> / .dbt / profiles.yml" as the secret value
@@ -158,7 +162,7 @@ jobs:
         run: dbt debug --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}  
 
-      - name: dbt docs gen
+      - name: dbt docs generate
         run: dbt docs generate --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
 
@@ -166,8 +170,14 @@ jobs:
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
       
-      - name: manifest upd
+      - name: manifest update
         run: python ${{ inputs.manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
+        # Workaround when using Windows runner
+        #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+
+      - name: manifest & catalog upd
+        run: python ${{ inputs.catalog_manifest_upd_script_path }}
         working-directory: ${{ inputs.dbt_project_path }}
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
