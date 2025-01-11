@@ -1,3 +1,11 @@
+"""
+This script updates the 'manifest.json' and 'catalog.json' file in a dbt project.
+To test the result:
+    1. Run 'dbt docs generate'
+    2. Run 'python /home/src/mage/dbt/ab_gaming/upd_catalog_manifest.py'
+    3. Run 'dbt docs serve'
+    4. Verify that the elements were erased
+"""
 import json
 
 
