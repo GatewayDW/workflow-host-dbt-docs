@@ -180,16 +180,19 @@ jobs:
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: download py script for manifest & catalog update 🔻
+      - name: download py script 1/2 🔻
         run: |
           curl -O ${{ inputs.dbt_project_path }}/${{ inputs.manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
-          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.catalog_manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
 
       - name: manifest update
         run: python ${{ inputs.manifest_upd_script_path }}
         working-directory: ${{ inputs.dbt_project_path }}
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+
+      - name: download py script 2/2 🔻
+        run: |
+          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.catalog_manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
 
       - name: manifest & catalog update
         run: python ${{ inputs.catalog_manifest_upd_script_path }}
