@@ -176,7 +176,11 @@ jobs:
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
-      - name: manifest & catalog upd
+      - name: download py script for manifest & catalog update
+        run: |
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ github.ref_name }}/${{ inputs.catalog_manifest_upd_script_path }}
+
+      - name: manifest & catalog update
         run: python ${{ inputs.catalog_manifest_upd_script_path }}
         working-directory: ${{ inputs.dbt_project_path }}
         # Workaround when using Windows runner
