@@ -200,7 +200,7 @@ jobs:
         working-directory: ${{ inputs.dbt_project_path }}
 
       - name: (Windows) download py script 2/2 🔻
-        if: runner.os != 'Windows'
+        if: runner.os == 'Windows'
         shell: cmd
         run: |
           curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ inputs.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
