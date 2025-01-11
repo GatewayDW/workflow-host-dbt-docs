@@ -7,10 +7,6 @@
 
 This is the Github Action to host dbt docs on GitHub pages when there is changes in the repo.
 
-Example of dbt docs:
-![](asset/dbt-docs-1.png)
-![](asset/dbt-docs-2.png)
-
 Ref: https://www.youtube.com/watch?app=desktop&v=I-yT2Err6PE
 
 ## Steps to use this GitHub Workflow
