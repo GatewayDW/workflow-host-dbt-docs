@@ -43,7 +43,17 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
-      
+
+      - name: Extract version with fallback
+        id: get-version
+        run: |
+          if [[ "${GITHUB_ACTION_REF}" == refs/tags/* ]]; then
+            echo "action_version=${GITHUB_ACTION_REF#refs/tags/}" >> $GITHUB_ENV
+          else
+            echo "action_version=main" >> $GITHUB_ENV
+          fi
+          echo "Using action version: ${{ env.action_version }}"
+
       - name: (Linux) Set up Python
         if: runner.os != 'Windows'
         uses: actions/setup-python@v5
@@ -172,8 +182,8 @@ jobs:
 
       - name: download py script for manifest & catalog update 🔻
         run: |
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ github.ref_name }}/${{ inputs.manifest_upd_script_path }}
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ github.ref_name }}/${{ inputs.catalog_manifest_upd_script_path }}
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
 
       - name: manifest update
         run: python ${{ inputs.manifest_upd_script_path }}
