@@ -182,7 +182,8 @@ jobs:
 
       - name: download py script 1/2 🔻
         run: |
-          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
 
       - name: manifest update
         run: python ${{ inputs.manifest_upd_script_path }}
@@ -192,7 +193,8 @@ jobs:
 
       - name: download py script 2/2 🔻
         run: |
-          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.catalog_manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
 
       - name: manifest & catalog update
         run: python ${{ inputs.catalog_manifest_upd_script_path }}
