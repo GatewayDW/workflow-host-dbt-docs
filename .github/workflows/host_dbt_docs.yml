@@ -47,7 +47,7 @@ jobs:
       - name: Extract version with fallback
         id: get-version
         run: |
-          echo "github.job: $github.job"
+          echo "github.job: ${github.job}"
           if [[ "${GITHUB_WORKFLOW_REF}" == refs/tags/v* ]]; then
             # Remove the prefix "refs/tags/" to get the version
             echo "action_version=${github.job#refs/tags/}" >> $GITHUB_ENV
@@ -56,180 +56,180 @@ jobs:
           fi
           echo "Using action version: ${{ env.action_version }}"
 
-      - name: (Linux) Set up Python
-        if: runner.os != 'Windows'
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: 'pip'  # caching pip dependencies
+#       - name: (Linux) Set up Python
+#         if: runner.os != 'Windows'
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: "3.10"
+#           cache: 'pip'  # caching pip dependencies
 
-#      - name: Install pyodbc
-#        run: pip install pyodbc
+# #      - name: Install pyodbc
+# #        run: pip install pyodbc
 
-      - name: (Linux) Install dbt
-        if: runner.os != 'Windows'
-        run: pip install dbt-sqlserver==1.7.4
+#       - name: (Linux) Install dbt
+#         if: runner.os != 'Windows'
+#         run: pip install dbt-sqlserver==1.7.4
 
-      - name: Install dbt deps
-        run: dbt deps
-        working-directory: ${{ inputs.dbt_project_path }}
+#       - name: Install dbt deps
+#         run: dbt deps
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: (Windows) create dbt model (.sql) to document current workflow metadata.
-        if: runner.os == 'Windows'
-        run: |
-          $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
-          $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
-          $output_path = "${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+#       - name: (Windows) create dbt model (.sql) to document current workflow metadata.
+#         if: runner.os == 'Windows'
+#         run: |
+#           $output_dir = "${{ inputs.dbt_project_path }}/models/${{ env.DBT_SCHEMA }}"
+#           $output_path = "$output_dir/${{ env.DBT_MODEL_GHA_METADATA }}.sql"
+#           $output_path = "${{ env.DBT_MODEL_GHA_METADATA }}.sql"
 
-          mkdir $output_dir -Force
+#           mkdir $output_dir -Force
           
-          $content = echo "
-            {{ config(
-                materialized='view',
-                schema='${{ env.DBT_SCHEMA }}',
-              ) }}
+#           $content = echo "
+#             {{ config(
+#                 materialized='view',
+#                 schema='${{ env.DBT_SCHEMA }}',
+#               ) }}
 
-            -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
-            select
-              '${{ github.repositoryUrl }}' as repo_url,
+#             -- Full list of variables: https://docs.github.com/en/actions/learn-github-actions/environment-variables
+#             select
+#               '${{ github.repositoryUrl }}' as repo_url,
 
-              '${{ github.workflow }}' as workflow_name,
-              '${{ github.ref }}' as workflow_trigger,
-              '${{ github.sha }}' as last_merge_commit,
-              '${{ github.event_name }}' as trigger_event,
-              '${{ github.base_ref }}' as branch_from_merge,
-              '${{ github.run_number }}' as build_no,
-              '${{ github.run_attempt }}' as build_run_attempt,
+#               '${{ github.workflow }}' as workflow_name,
+#               '${{ github.ref }}' as workflow_trigger,
+#               '${{ github.sha }}' as last_merge_commit,
+#               '${{ github.event_name }}' as trigger_event,
+#               '${{ github.base_ref }}' as branch_from_merge,
+#               '${{ github.run_number }}' as build_no,
+#               '${{ github.run_attempt }}' as build_run_attempt,
               
-              '${{ github.actor }}' as actor,
-              '${{ runner.name }}' as runner_name,
-              '${{ runner.os }}' as runner_os,
-              '${{ runner.arch }}' as runner_arch
-          "
+#               '${{ github.actor }}' as actor,
+#               '${{ runner.name }}' as runner_name,
+#               '${{ runner.os }}' as runner_os,
+#               '${{ runner.arch }}' as runner_arch
+#           "
           
-          Out-File -FilePath $output_path -InputObject $content -Encoding utf8
+#           Out-File -FilePath $output_path -InputObject $content -Encoding utf8
 
-          # Convert to UTF-8 No BOM
-          $MyFile = Get-Content $output_path
-          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
-        working-directory: ${{ inputs.dbt_project_path }}
+#           # Convert to UTF-8 No BOM
+#           $MyFile = Get-Content $output_path
+#           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+#           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: (Windows) create dbt profiles (.yml)
-        if: runner.os == 'Windows'
-        env:
-          SECRETS_DBT_PROFILE: "${{ secrets.secrets_dbt_profile }}"
-        run: |
-          Get-ChildItem Env:
+#       - name: (Windows) create dbt profiles (.yml)
+#         if: runner.os == 'Windows'
+#         env:
+#           SECRETS_DBT_PROFILE: "${{ secrets.secrets_dbt_profile }}"
+#         run: |
+#           Get-ChildItem Env:
 
-          $output_dir = "${{ inputs.dbt_project_path }}"
-          $output_path = "$output_dir/profiles.yml"
-          $output_path = "profiles.yml"
+#           $output_dir = "${{ inputs.dbt_project_path }}"
+#           $output_path = "$output_dir/profiles.yml"
+#           $output_path = "profiles.yml"
 
-          mkdir $output_dir -Force
+#           mkdir $output_dir -Force
           
-          $content1 = echo "
-            ${{ secrets.secrets_dbt_profile }}
-          "
-          $content2 = echo "$env:SECRETS_DBT_PROFILE"
-          $content3 = echo "
-          test:
-            target: dev
-            outputs:
-              dev:
-                type: sqlserver
-                driver: 'ODBC Driver 17 for SQL Server' # (The ODBC Driver installed on your system)
-                server: SERVER_NAME
-                database: TEST
-                port: 1433
-                schema: dbo
-                user: USERNAME
-                password: PASSWORD
-                trust_cert: true          
-          "
+#           $content1 = echo "
+#             ${{ secrets.secrets_dbt_profile }}
+#           "
+#           $content2 = echo "$env:SECRETS_DBT_PROFILE"
+#           $content3 = echo "
+#           test:
+#             target: dev
+#             outputs:
+#               dev:
+#                 type: sqlserver
+#                 driver: 'ODBC Driver 17 for SQL Server' # (The ODBC Driver installed on your system)
+#                 server: SERVER_NAME
+#                 database: TEST
+#                 port: 1433
+#                 schema: dbo
+#                 user: USERNAME
+#                 password: PASSWORD
+#                 trust_cert: true          
+#           "
           
-          Out-File -FilePath $output_path -InputObject $content2 -Encoding utf8
+#           Out-File -FilePath $output_path -InputObject $content2 -Encoding utf8
 
-          # Convert to UTF-8 No BOM
-          $MyFile = Get-Content $output_path
-          $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
-          [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
-        working-directory: ${{ inputs.dbt_project_path }}
+#           # Convert to UTF-8 No BOM
+#           $MyFile = Get-Content $output_path
+#           $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+#           [System.IO.File]::WriteAllLines($output_path, $MyFile, $Utf8NoBomEncoding)
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: Overwrite dbt profiles (.yml)
-        uses: "DamianReeves/write-file-action@master"
-        with:
-          path: "${{ inputs.dbt_project_path }}/profiles.yml"
-          write-mode: overwrite
-          contents: |
-            ${{ secrets.secrets_dbt_profile }}
+#       - name: Overwrite dbt profiles (.yml)
+#         uses: "DamianReeves/write-file-action@master"
+#         with:
+#           path: "${{ inputs.dbt_project_path }}/profiles.yml"
+#           write-mode: overwrite
+#           contents: |
+#             ${{ secrets.secrets_dbt_profile }}
 
-      # - name: (Windows) recursively to check current and subdirectory
-      #   if: runner.os == 'Windows'
-      #   run: |
-      #     Get-ChildItem -Recurse
-      #   working-directory: ${{ inputs.dbt_project_path }}
+#       # - name: (Windows) recursively to check current and subdirectory
+#       #   if: runner.os == 'Windows'
+#       #   run: |
+#       #     Get-ChildItem -Recurse
+#       #   working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: dbt test db connection 🔌
-        run: dbt debug --profiles-dir .
-        working-directory: ${{ inputs.dbt_project_path }}  
+#       - name: dbt test db connection 🔌
+#         run: dbt debug --profiles-dir .
+#         working-directory: ${{ inputs.dbt_project_path }}  
 
-      - name: dbt docs generate 📝
-        run: dbt docs generate --profiles-dir .
-        working-directory: ${{ inputs.dbt_project_path }}
+#       - name: dbt docs generate 📝
+#         run: dbt docs generate --profiles-dir .
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: dbt compile
-        run: dbt compile --profiles-dir .
-        working-directory: ${{ inputs.dbt_project_path }}
+#       - name: dbt compile
+#         run: dbt compile --profiles-dir .
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: download py script 1/2 🔻
-        run: |
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
-        working-directory: ${{ inputs.dbt_project_path }}
+#       - name: download py script 1/2 🔻
+#         run: |
+#           curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: manifest update
-        run: python ${{ inputs.manifest_upd_script_path }}
-        working-directory: ${{ inputs.dbt_project_path }}
-        # Workaround when using Windows runner
-        #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+#       - name: manifest update
+#         run: python ${{ inputs.manifest_upd_script_path }}
+#         working-directory: ${{ inputs.dbt_project_path }}
+#         # Workaround when using Windows runner
+#         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
-      - name: download py script 2/2 🔻
-        run: |
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
-        working-directory: ${{ inputs.dbt_project_path }}
+#       - name: download py script 2/2 🔻
+#         run: |
+#           curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
+#         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: manifest & catalog update
-        run: python ${{ inputs.catalog_manifest_upd_script_path }}
-        working-directory: ${{ inputs.dbt_project_path }}
-        # Workaround when using Windows runner
-        #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
+#       - name: manifest & catalog update
+#         run: python ${{ inputs.catalog_manifest_upd_script_path }}
+#         working-directory: ${{ inputs.dbt_project_path }}
+#         # Workaround when using Windows runner
+#         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
-      - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
-        uses: actions/upload-artifact@v4
-        with:
-          name: artifact
-          path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
-          retention-days: 3
+#       - name: Upload Artifacts - folder related dbt docs 🔺 # The project is then uploaded as an artifact named 'artifact'.
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: artifact
+#           path: ${{ inputs.dbt_project_path }}/target # e.g. etl/CDW_FB_SQ/target
+#           retention-days: 3
       
-  deploy:
-    needs: [build]
-    runs-on: ubuntu-latest
+#   deploy:
+#     needs: [build]
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
+#     steps:
+#       - name: Checkout 🛎️
+#         uses: actions/checkout@v4
 
-      - name: Download Artifacts 🔻 # The built project is downloaded into the 'artifact' folder.
-        uses: actions/download-artifact@v4
-        with:
-          name: artifact
-          path: artifact
+#       - name: Download Artifacts 🔻 # The built project is downloaded into the 'artifact' folder.
+#         uses: actions/download-artifact@v4
+#         with:
+#           name: artifact
+#           path: artifact
 
-      - name: ls recursively to check current and subdirectory
-        run: |
-          ls -R
+#       - name: ls recursively to check current and subdirectory
+#         run: |
+#           ls -R
       
-      - name: Deploy to branch gh-pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with: 
-          folder: artifact # e.g. etl/CDW_FB_SQ/target
+#       - name: Deploy to branch gh-pages
+#         uses: JamesIves/github-pages-deploy-action@v4
+#         with: 
+#           folder: artifact # e.g. etl/CDW_FB_SQ/target
