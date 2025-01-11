@@ -47,6 +47,7 @@ jobs:
       - name: Extract version with fallback
         id: get-version
         run: |
+          echo "GITHUB_REF: ${ GITHUB_REF }"
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             # Remove the prefix "refs/tags/" to get the version
             echo "action_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
