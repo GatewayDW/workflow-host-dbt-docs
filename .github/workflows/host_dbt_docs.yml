@@ -174,7 +174,15 @@ jobs:
         run: dbt compile --profiles-dir .
         working-directory: ${{ inputs.dbt_project_path }}
 
-      - name: download py script 1/2 🔻
+      - name: (Linux) download py script 1/2 🔻
+        if: runner.os != 'Windows'
+        run: |
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ inputs.action_version }}/${{ inputs.manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: (Windows) download py script 1/2 🔻
+        if: runner.os == 'Windows'
+        shell: cmd
         run: |
           curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ inputs.action_version }}/${{ inputs.manifest_upd_script_path }}
         working-directory: ${{ inputs.dbt_project_path }}
@@ -185,7 +193,15 @@ jobs:
         # Workaround when using Windows runner
         #https://github.com/JamesIves/github-pages-deploy-action#operating-system-support-
 
-      - name: download py script 2/2 🔻
+      - name: (Linux) download py script 2/2 🔻
+        if: runner.os != 'Windows'
+        run: |
+          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ inputs.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
+        working-directory: ${{ inputs.dbt_project_path }}
+
+      - name: (Windows) download py script 2/2 🔻
+        if: runner.os != 'Windows'
+        shell: cmd
         run: |
           curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ inputs.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
         working-directory: ${{ inputs.dbt_project_path }}
