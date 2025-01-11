@@ -182,8 +182,8 @@ jobs:
 
       - name: download py script for manifest & catalog update 🔻
         run: |
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
-          curl -O https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
+          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.manifest_upd_script_path }}
+          curl -O ${{ inputs.dbt_project_path }}/${{ inputs.catalog_manifest_upd_script_path }} https://raw.githubusercontent.com/GatewayDW/workflow-host-dbt-docs/${{ env.action_version }}/${{ inputs.catalog_manifest_upd_script_path }}
 
       - name: manifest update
         run: python ${{ inputs.manifest_upd_script_path }}
