@@ -42,6 +42,10 @@ def empty_manifest(table):
     table["schema"] = ""
     table["description"] = ""
 
+    # Column description
+    for col in table.get("columns", {}).values():
+        col["description"] = ""
+
     # Exposures part
     table["owner"] = {}
     table["url"] = ""
