@@ -1,0 +1,143 @@
+name: Publish Conda Environment
+
+on: # yamllint disable-line rule:truthy
+    workflow_dispatch:
+    push:
+      branches:
+        - main
+      paths:
+        - 'requirements.txt'
+
+jobs:
+  build:
+    # Available runner images:
+    # https://github.com/actions/runner-images?tab=readme-ov-file#available-images
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-2019
+        #   - windows-2022
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Import environment variables from .env.base
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: '.env.base'
+
+    - name: Set up Miniconda
+      env:
+        MINICONDA_PYTHON_VERSION: ${{ env.MINICONDA_PYTHON_VERSION }}
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        auto-update-conda: true
+        python-version: ${{ env.MINICONDA_PYTHON_VERSION}}
+
+    - name: Create Conda environment
+      env:
+        MINICONDA_PREFIX: ${{ env.MINICONDA_PREFIX }}
+        MINICONDA_PYTHON_VERSION: ${{ env.MINICONDA_PYTHON_VERSION }}
+      run: |
+        mkdir ${{ env.MINICONDA_PREFIX }}
+        conda create python=${{ env.MINICONDA_PYTHON_VERSION }} --prefix "${{ env.MINICONDA_PREFIX }}" --yes
+        conda activate "${{ env.MINICONDA_PREFIX }}"
+        conda env list
+
+    - name: Install uv and create a virtual environment
+      env:
+        MINICONDA_PREFIX: ${{ env.MINICONDA_PREFIX }}
+      run: |
+        conda activate "${{ env.MINICONDA_PREFIX }}"
+        pip install --upgrade setuptools==70.3.0
+        pip install uv
+        uv pip install -r requirements.txt
+
+    - name: Pack Conda environment
+      env:
+        MINICONDA_VENV: ${{ env.MINICONDA_VENV }}
+        MINICONDA_PREFIX: ${{ env.MINICONDA_PREFIX }}
+      run: |
+        conda activate "${{ env.MINICONDA_PREFIX }}"
+        conda-pack --prefix "${{ env.MINICONDA_PREFIX }}" --output ${{ env.MINICONDA_VENV }}_${{ matrix.os }}.tar.gz --ignore-missing-files
+      # --ignore-missing-files: Ignore missing files when packing the environment
+        # Cause: installed old version of setuptools, different from default ver in conda env (see requirements.txt)
+        # CondaPackError: 
+        # Files managed by conda were found to have been deleted/overwritten in the
+        # following packages:
+        # - setuptools 72.1.0:
+      shell: pwsh
+
+    # - name: List all files in the working directory
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse
+    #   shell: pwsh
+
+    - name: Upload Conda environment artifact
+      uses: actions/upload-artifact@v4
+      env:
+        MINICONDA_VENV: ${{ env.MINICONDA_VENV }}
+      with:
+        name: conda-env-${{ env.MINICONDA_VENV }}-${{ matrix.os }}
+        path: ${{ env.MINICONDA_VENV }}_${{ matrix.os }}.tar.gz
+        retention-days: 3
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download all Conda environment artifacts
+      uses: actions/download-artifact@v4
+
+    - name: Import environment variables from .env.base
+      uses: cardinalby/export-env-action@v2
+      with:
+        envFile: '.env.base'
+
+    - name: Generate timestamp in PST
+      id: timestamp
+      run: |
+        export TZ="America/Los_Angeles"
+        echo "TIMESTAMP=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+
+    - name: Generate Release Notes Markdown
+      env:
+        MINICONDA_PREFIX: ${{ env.MINICONDA_PREFIX }}
+      run: |
+        echo "# Release Notes" > RELEASE_NOTES.md
+        echo "Packed Conda environments for offline use" >> RELEASE_NOTES.md
+        echo "Steps to unpack the env:" >> RELEASE_NOTES.md
+        echo "1: Download the env \`*.tar.gz\`" >> RELEASE_NOTES.md
+        echo "2: Run \`mkdir ${{ env.MINICONDA_PREFIX }}\`" >> RELEASE_NOTES.md
+        echo "3: Run \`tar -xzf <Downloaded path> -C ${{ env.MINICONDA_PREFIX }}\`" >> RELEASE_NOTES.md
+        echo "4: Remove the file .tar.gz" >> RELEASE_NOTES.md
+        echo "5: To activate the env, Run \`${{ env.MINICONDA_PREFIX }}\\Scripts\\activate.bat \`" >> RELEASE_NOTES.md
+
+
+    # - name: List all files in the working directory
+    #   run: |
+    #     Get-ChildItem -Path . -Recurse
+    #   shell: pwsh
+
+    - name: Gather artifact paths (.tar.gz)
+      id: gather_paths
+      run: |
+        # Find all .tar.gz files and convert newlines to spaces
+        tar_files=$(find . -type f -name "*.tar.gz" | tr '\n' ' ')
+        echo "TAR_FILES=${tar_files}" >> $GITHUB_ENV
+
+    - name: Publish to GitHub Packages | ${{ env.TIMESTAMP }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TIMESTAMP: ${{ env.TIMESTAMP }}
+        TAR_FILES: ${{ env.TAR_FILES }}
+      run: |
+        gh release create conda-env-${{ env.TIMESTAMP }} ${{ env.TAR_FILES }}`
+          --title "Conda Env | ${{ github.ref_name }} | ${{ env.TIMESTAMP }}" `
+          --notes-file RELEASE_NOTES.md
+      shell: pwsh
