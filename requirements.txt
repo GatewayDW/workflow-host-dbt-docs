@@ -1,3 +1,6 @@
+# Conda-Pack
+conda-pack==0.8.0
+
 dbt-sqlserver==1.7.4
 
 # Credentials Management
